@@ -1,0 +1,13 @@
+# Editor
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Files
+.env
+*.log

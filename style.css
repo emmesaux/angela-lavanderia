@@ -1,0 +1,504 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #2563eb;
+    --secondary-color: #1e40af;
+    --accent-color: #f97316;
+    --light-bg: #f8fafc;
+    --text-color: #1e293b;
+    --text-light: #64748b;
+    --border-color: #e2e8f0;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: #fff;
+}
+
+.navbar {
+    background: white;
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 20px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.site-logo,
+.hero-logo {
+    border-radius: 30%;
+    object-fit: cover;
+    object-position: center 45%;
+    background: #fff;
+    display: inline-block;
+}
+
+.site-logo {
+    width: 60px;
+    height: 40px;
+    margin-right: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+
+.hero-logo {
+    width: 160px;
+    height: 120px;
+    border: 8px solid rgba(255,255,255,0.95);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+    margin-bottom: 16px;
+}
+
+.logo i {
+    font-size: 1.8rem;
+}
+
+
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--text-color);
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+    color: #fff;
+    background: var(--primary-color);
+    padding: 8px 12px;
+    border-radius: 999px;
+}
+
+/* Active (selected) nav link - persists while in section */
+.nav-links a.active {
+    color: #fff;
+    background: var(--primary-color);
+    padding: 8px 12px;
+    border-radius: 999px;
+}
+
+.hamburger {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+}
+
+.hamburger span {
+    width: 25px;
+    height: 3px;
+    background: var(--text-color);
+    margin: 5px 0;
+    transition: 0.3s;
+}
+
+/* Hero Section */
+.hero {
+    background: linear-gradient(135deg, rgba(37,99,235,0.85) 0%, rgba(30,64,175,0.85) 100%), url('images/hero-bg.jpg') center/cover no-repeat;
+    color: white;
+    padding: 100px 20px;
+    text-align: center;
+    min-height: 600px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-content h1 {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.hero-content p {
+    font-size: 1.3rem;
+    margin-bottom: 2rem;
+    opacity: 0.95;
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 30px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: var(--accent-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #ea580c;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Chi Siamo */
+.chi-siamo {
+    padding: 80px 20px;
+    background-color: var(--light-bg);
+}
+
+.chi-siamo h2,
+.servizi h2,
+.prezzi h2,
+.contatti h2 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+    color: var(--text-color);
+}
+
+.content-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    align-items: center;
+}
+
+.content-text p {
+    font-size: 1.1rem;
+    color: var(--text-light);
+    margin-bottom: 1rem;
+    line-height: 1.8;
+}
+
+/* Servizi */
+.servizi {
+    padding: 80px 20px;
+}
+
+.servizi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.servizio-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.servizio-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-lg);
+}
+
+.servizio-card i {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.servizio-card h3 {
+    margin-bottom: 1rem;
+    color: var(--text-color);
+}
+
+.servizio-card p {
+    color: var(--text-light);
+    line-height: 1.6;
+}
+
+/* Contatti */
+.contatti {
+    padding: 80px 20px;
+}
+
+.contatti-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.info-box {
+    background: var(--light-bg);
+    padding: 2rem;
+    border-radius: 10px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.info-box:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.info-box i {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+.info-box:hover i {
+    color: white;
+}
+
+.info-box h3 {
+    margin-bottom: 0.5rem;
+}
+
+.info-box a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.info-box:hover a {
+    color: white;
+}
+
+.orari {
+    background: var(--light-bg);
+    padding: 2rem;
+}
+
+.orari-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.orario-item {
+    display: flex;
+    align-items: center;
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.orario-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.orario-item i {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.orario-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.giorno {
+    font-weight: bold;
+    color: var(--text-color);
+    font-size: 1rem;
+}
+
+.orario {
+    color: var(--text-light);
+    font-size: 0.9rem;
+    margin-top: 0.25rem;
+}
+
+.social {
+    text-align: center;
+    padding: 2rem;
+}
+
+.social h3 {
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.social-links a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 1.5rem;
+}
+
+.social-links a:hover {
+    background: var(--accent-color);
+    transform: translateY(-5px);
+}
+
+/* Footer */
+footer {
+    background: var(--text-color);
+    color: white;
+    text-align: center;
+    padding: 2rem 20px;
+    margin-top: 2rem;
+}
+
+footer p {
+    margin: 0.5rem 0;
+}
+
+footer i {
+    color: var(--accent-color);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hamburger {
+        display: flex;
+    }
+
+    .nav-links {
+        display: none;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        right: 0;
+        background: white;
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+        box-shadow: var(--shadow);
+    }
+
+    .nav-links.active {
+        display: flex;
+    }
+
+    .hero-content h1 {
+        font-size: 2.5rem;
+    }
+
+    .hero-content p {
+        font-size: 1rem;
+    }
+
+    .hero {
+        min-height: 400px;
+        padding: 50px 20px;
+    }
+
+    .chi-siamo h2,
+    .servizi h2,
+    .contatti h2 {
+        font-size: 2rem;
+    }
+
+    .servizi-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .orari-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .navbar .container {
+        padding: 1rem 15px;
+    }
+
+    .logo {
+        font-size: 1.2rem;
+    }
+
+    .logo i {
+        font-size: 1.4rem;
+    }
+
+    .hero-content h1 {
+        font-size: 1.8rem;
+    }
+
+    .hero-content p {
+        font-size: 0.9rem;
+    }
+
+    .chi-siamo h2,
+    .servizi h2,
+    .contatti h2 {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .servizio-card,
+    .info-box {
+        padding: 1.5rem;
+    }
+
+    .servizio-card i,
+    .info-box i {
+        font-size: 2rem;
+    }
+}
+
+/* Map responsive */
+.map-container {
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.map-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+    box-shadow: var(--shadow);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.map-wrapper iframe {
+    width: 100%;
+    height: 450px;
+    display: block;
+    border: 0;
+}
+
+@media (max-width: 600px) {
+    .map-wrapper iframe {
+        height: 300px;
+    }
+}
