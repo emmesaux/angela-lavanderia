@@ -46,43 +46,51 @@ jobs:  fetch:
 
         python -m pip install --upgrade pip      - name: Fetch Instagram posts with Instaloader
 
-        pip install instaloader        run: |
+        name: Update Instagram Feed
 
-          mkdir -p data
+        on:
+          schedule:
+            # Esegue ogni 6 ore
+            - cron: '0 */6 * * *'
+          workflow_dispatch: # Permette esecuzione manuale
 
-    - name: Download Instagram posts          # Usa un account esistente che hai già usato regolarmente su Instagram
+        jobs:
+            # This workflow was replaced by `fetch-instagram-graph.yml`.
+            # Kept only to avoid accidental runs of an old broken file.
+            # Please remove after you confirm `fetch-instagram-graph.yml` works.
+          update-instagram:
+            runs-on: ubuntu-latest
 
-      run: |          # Questo evita il checkpoint perché Instagram riconosce l'account
+            steps:
+              - name: Checkout repository
+                uses: actions/checkout@v4
 
-        # Scarica gli ultimi 3 post senza login (per profili pubblici)          instaloader --login=${{ secrets.INSTAGRAM_USERNAME }} --password=${{ secrets.INSTAGRAM_PASSWORD }} --no-videos --no-profile-pic --no-compress-json --no-metadata-json --dirname-pattern=temp_instagram --filename-pattern="{shortcode}" --count=3 lavanderia_angela_
+              - name: Set up Python
+                uses: actions/setup-python@v4
+                with:
+                  python-version: '3.10'
 
-        instaloader --no-videos --no-metadata-json --no-compress-json --count 3 lavanderia_angela_          python3 fetch_instagram_to_json.py
+              - name: Install Instaloader
+                run: |
+                  python -m pip install --upgrade pip
+                  pip install instaloader
 
-      env:
+              - name: Download Instagram posts
+                run: |
+                  # Crea cartella temporanea
+                  mkdir -p temp_instagram
+                  # Prova a scaricare gli ultimi 3 post (per profili pubblici funziona senza login)
+                  instaloader --no-videos --no-compress-json --no-profile-pic --no-metadata-json --dirname-pattern=temp_instagram --filename-pattern="{shortcode}" --count=3 lavanderia_angela_
+                env:
+                  INSTALOADER_USERNAME: ${{ secrets.INSTAGRAM_USERNAME }}
+                  INSTALOADER_PASSWORD: ${{ secrets.INSTAGRAM_PASSWORD }}
 
-        # Se necessario, puoi aggiungere credenziali qui, ma per ora proviamo senza      - name: Commit & Push
+              - name: Process Instagram data
+                run: |
+                  python3 - <<'PY'
+        import json
+        import os
 
-        INSTALOADER_USERNAME: ${{ secrets.INSTAGRAM_USERNAME }}        run: |
-
-        INSTALOADER_PASSWORD: ${{ secrets.INSTAGRAM_PASSWORD }}          git config user.name "github-actions[bot]"
-
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-    - name: Process Instagram data          if git diff --quiet data/instagram.json; then
-
-      run: |            echo "No changes to commit"
-
-        python3 -c "          else
-
-        import json            git add data/instagram.json
-
-        import os            git commit -m "Update Instagram feed"
-
-        from datetime import datetime            git push
-
-          fi
-
-        # Cerca la cartella dell'utente
         user_folder = None
         for item in os.listdir('.'):
             if item.startswith('lavanderia_angela_'):
@@ -91,37 +99,34 @@ jobs:  fetch:
 
         if not user_folder:
             print('Nessuna cartella Instagram trovata')
-            exit(1)
+            exit(0)
 
         posts = []
         post_files = [f for f in os.listdir(user_folder) if f.endswith('.json')]
-        
+
         for post_file in sorted(post_files, reverse=True)[:3]:
             with open(os.path.join(user_folder, post_file), 'r', encoding='utf-8') as f:
                 post_data = json.load(f)
-                
-            # Estrai le informazioni necessarie
             post = {
                 'id': post_data.get('id', ''),
-                'image': f'https://www.instagram.com/p/{post_data.get(\"shortcode\", \"\")}/media/?size=l',
-                'link': f'https://www.instagram.com/p/{post_data.get(\"shortcode\", \"\")}/',
+                'image': f'https://www.instagram.com/p/{post_data.get("shortcode", "")}/media/?size=l',
+                'link': f'https://www.instagram.com/p/{post_data.get("shortcode", "")}/',
                 'caption': post_data.get('edge_media_to_caption', {}).get('edges', [{}])[0].get('node', {}).get('text', ''),
                 'timestamp': post_data.get('taken_at_timestamp', 0)
             }
             posts.append(post)
 
-        # Salva in data/instagram.json
         os.makedirs('data', exist_ok=True)
         with open('data/instagram.json', 'w', encoding='utf-8') as f:
             json.dump({'items': posts}, f, ensure_ascii=False, indent=2)
 
         print(f'Aggiornati {len(posts)} post Instagram')
-        "
+        PY
 
-    - name: Commit and push changes
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git add data/instagram.json
-        git commit -m "Update Instagram feed data" || echo "No changes to commit"
-        git push
+              - name: Commit and push changes
+                run: |
+                  git config --local user.email "action@github.com"
+                  git config --local user.name "GitHub Action"
+                  git add data/instagram.json
+                  git commit -m "Update Instagram feed data" || echo "No changes to commit"
+                  git push

@@ -125,21 +125,49 @@ async function loadInstagramFeed() {
     items.forEach(post => {
       const a = document.createElement('a');
       a.className = 'insta-item';
-      a.href = post.link;
+
+      const preferredLink = post.link && post.link.includes('/p/') ? post.link : null;
+      const fallbackLink = post.shortcode ? `https://www.instagram.com/p/${post.shortcode}/` : null;
+      a.href = preferredLink || post.permalink || fallbackLink || 'https://www.instagram.com/lavanderia_angela_/';
       a.target = '_blank';
-      a.rel = 'noopener';
+      a.rel = 'noopener noreferrer';
+      a.setAttribute('role', 'listitem');
+      if (post.caption) a.setAttribute('aria-label', post.caption.substring(0, 100));
       
       const img = document.createElement('img');
-      img.src = post.image;
-      img.alt = (post.caption || '').substring(0, 50);
       img.loading = 'lazy';
-      img.onerror = () => { 
-        img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="300"%3E%3Crect fill="%23ddd" width="300" height="300"/%3E%3C/svg%3E'; 
+
+      const captionText = (post.caption || '').trim();
+      img.alt = captionText ? captionText.substring(0, 120) : 'Post Instagram Lavanderia Angela';
+
+      const fallbackSvg = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="300"%3E%3Crect fill="%23ddd" width="300" height="300"/%3E%3C/svg%3E';
+      const candidates = [
+        post.image,
+        post.media_url,
+        post.thumbnail_url,
+        post.display_url,
+        post.media?.image_url,
+        post.shortcode ? `https://www.instagram.com/p/${post.shortcode}/media/?size=l` : null
+      ].filter(Boolean);
+
+      let candidateIndex = 0;
+      const tryNext = () => {
+        if (candidateIndex < candidates.length) {
+          img.src = candidates[candidateIndex];
+          candidateIndex += 1;
+        } else {
+          img.src = fallbackSvg;
+        }
       };
+
+      img.addEventListener('error', tryNext);
+      tryNext();
       
       a.appendChild(img);
       el.appendChild(a);
-    });    console.log('Instagram feed loaded:', posts.length, 'posts');
+    });
+
+    console.log('Instagram feed loaded:', posts.length, 'posts');
   } catch (err) {
     console.error('Instagram feed error:', err);
     el.innerHTML = `
