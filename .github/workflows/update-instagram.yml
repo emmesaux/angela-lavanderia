@@ -21,11 +21,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install instaloader
 
-    - name: Fetch Instagram posts with Instaloader
-    run: |
-      mkdir -p data
-      instaloader --no-videos --no-profile-pic --no-compress-json --no-metadata-json --dirname-pattern=temp_instagram --filename-pattern="{shortcode}" --count=3 lavanderia_angela_
-      python3 fetch_instagram_to_json.py
+      - name: Fetch Instagram posts with Instaloader
+        run: |
+          mkdir -p data
+          instaloader --no-videos --no-profile-pic --no-compress-json --no-metadata-json --dirname-pattern=temp_instagram --filename-pattern="{shortcode}" --count=3 lavanderia_angela_
+          python3 fetch_instagram_to_json.py
 
       - name: Commit & Push
         run: |
