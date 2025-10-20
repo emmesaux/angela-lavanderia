@@ -18,6 +18,11 @@ jobs:
         with:
           persist-credentials: true
 
+      - name: Sync with remote
+        run: |
+          git fetch origin
+          git reset --hard origin/main
+
       - name: Verify IG access token
         env:
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
