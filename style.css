@@ -1,3 +1,8 @@
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+}
 * {
     margin: 0;
     padding: 0;
@@ -12,19 +17,43 @@
     --text-color: #1e293b;
     --text-light: #64748b;
     --border-color: #e2e8f0;
+    --card-bg: #ffffff;
+    --hero-overlay: linear-gradient(135deg, rgba(37,99,235,0.85) 0%, rgba(30,64,175,0.85) 100%);
     --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] {
+    --primary-color: #60a5fa;
+    --secondary-color: #0f172a;
+    --accent-color: #f97316;
+    --light-bg: #0f172a;
+    --text-color: #f8fafc;
+    --text-light: #cbd5e1;
+    --border-color: rgba(255,255,255,0.3);
+    --card-bg: #0b1220;
+    --hero-overlay: linear-gradient(135deg, rgba(9,30,60,0.85) 0%, rgba(5,25,45,0.85) 100%);
+}
+.theme-toggle {
+    cursor: pointer;
+    font-size: 1.5rem;
+    margin-left: 1.5rem;
+    color: var(--primary-color);
+    transition: color 0.3s;
+}
+.theme-toggle:hover {
+    color: var(--accent-color);
 }
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
     color: var(--text-color);
-    background-color: #fff;
+    background-color: var(--light-bg);
 }
 
 .navbar {
-    background: white;
+    background: var(--light-bg);
     box-shadow: var(--shadow);
     position: sticky;
     top: 0;
@@ -61,6 +90,29 @@ body {
     height: 40px;
     margin-right: 10px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+
+/* Theme toggle: desktop e mobile */
+.logo .theme-toggle {
+    margin-left: 0.75rem;
+    display: flex;
+    align-items: center;
+    font-size: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .nav-actions {
+        gap: 0.7rem;
+    }
+    .theme-toggle {
+        font-size: 1.3rem;
+    }
+    .nav-links {
+        background: var(--light-bg);
+    }
+    [data-theme="dark"] .nav-links {
+        background: var(--card-bg);
+    }
 }
 
 .hero-logo {
@@ -121,7 +173,7 @@ body {
 
 /* Hero Section */
 .hero {
-    background: linear-gradient(135deg, rgba(37,99,235,0.85) 0%, rgba(30,64,175,0.85) 100%), url('images/hero-bg.jpg') center/cover no-repeat;
+    background: var(--hero-overlay), url('images/hero-bg.jpg') center/cover no-repeat;
     color: white;
     padding: 100px 20px;
     text-align: center;
@@ -169,6 +221,16 @@ body {
 .chi-siamo {
     padding: 80px 20px;
     background-color: var(--light-bg);
+    border-top: 1px solid var(--border-color);
+}
+
+/* Card-like container for 'Chi Siamo' to create the stacco */
+.chi-siamo .container {
+    background: var(--card-bg);
+    border-radius: 14px;
+    padding: 3rem 2.5rem;
+    box-shadow: 0 2px 20px rgba(30,40,90,0.03);
+    border: 1px solid var(--border-color);
 }
 
 .chi-siamo h2,
@@ -210,7 +272,7 @@ body {
 }
 
 .servizio-card {
-    background: white;
+    background: var(--card-bg, white);
     padding: 2rem;
     border-radius: 10px;
     box-shadow: var(--shadow);
@@ -242,6 +304,7 @@ body {
 /* Contatti */
 .contatti {
     padding: 80px 20px;
+    background: var(--light-bg);
 }
 
 .contatti-grid {
@@ -252,14 +315,21 @@ body {
 }
 
 .info-box {
-    background: var(--light-bg);
+    background: var(--card-bg);
     padding: 2rem;
     border-radius: 10px;
     text-align: center;
     transition: all 0.3s ease;
+    border: 1px solid var(--border-color);
 }
 
 .info-box:hover {
+    background: rgba(255,255,255,0.05);
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
+}
+
+:not([data-theme="dark"]) .info-box:hover {
     background: var(--primary-color);
     color: white;
 }
@@ -288,8 +358,9 @@ body {
 }
 
 .orari {
-    background: var(--light-bg);
+    background: transparent;
     padding: 2rem;
+    border-top: 1px solid var(--border-color);
 }
 
 .orari-grid {
@@ -301,11 +372,12 @@ body {
 .orario-item {
     display: flex;
     align-items: center;
-    background: white;
+    background: var(--card-bg);
     padding: 1rem;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     transition: all 0.3s ease;
+    border: 1px solid var(--border-color);
 }
 
 .orario-item:hover {
@@ -331,10 +403,18 @@ body {
     font-size: 1rem;
 }
 
-.orario {
-    color: var(--text-light);
-    font-size: 0.9rem;
-    margin-top: 0.25rem;
+.orari {
+    background: var(--light-bg);
+    padding: 2rem;
+    border-radius: 18px;
+    border: 1.5px solid var(--border-color);
+    box-shadow: 0 2px 16px 0 rgba(30,40,90,0.04);
+    margin: 2rem 0;
+}
+
+
+[data-theme="dark"] .orario {
+    color: var(--text-color);
 }
 
 .social {
@@ -381,6 +461,10 @@ footer {
     margin-top: 2rem;
 }
 
+[data-theme="dark"] footer {
+    background: var(--secondary-color);
+}
+
 footer p {
     margin: 0.5rem 0;
 }
@@ -400,11 +484,21 @@ footer i {
 @media (max-width:900px){ .insta-grid{ grid-template-columns: repeat(2,1fr); } }
 @media (max-width:600px){ .insta-grid{ grid-template-columns: 1fr; } }
 
+/* Make Instagram images 25% smaller on mobile (centered) */
+@media (max-width:600px){
+    .insta-item {
+        max-width: 75%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .hamburger {
         display: flex;
     }
+    .logo .theme-toggle { display: none; }
 
     .nav-links {
         display: none;

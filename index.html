@@ -13,7 +13,7 @@
 <body>
     <!-- Navigazione -->
     <nav class="navbar">
-        <div class="container">
+    <div class="container">
             <div class="logo">
                 <img src="images/logo.png" alt="Angela Lavanderia" class="site-logo">
                 <span>Angela Lavanderia</span>
@@ -24,10 +24,15 @@
                <!-- <li><a href="#prezzi">Prezzi</a></li> -->
                 <li><a href="#contatti">Contatti</a></li>
             </ul>
-            <div class="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
+            <div class="nav-actions">
+                <div class="theme-toggle" id="theme-toggle" title="Cambia tema" aria-label="Cambia tema">
+                    <i class="fas fa-moon"></i>
+                </div>
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
             </div>
         </div>
     </nav>
@@ -204,5 +209,26 @@
     </footer>
 
     <script src="script.js"></script>
+    <script>
+    // Modalità light/dark
+    function setTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+        document.getElementById('theme-toggle').innerHTML = theme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+    }
+    function getPreferredTheme() {
+        const stored = localStorage.getItem('theme');
+        if (stored) return stored;
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
+        return 'light';
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        setTheme(getPreferredTheme());
+        document.getElementById('theme-toggle').onclick = function(e) {
+            e.stopPropagation();
+            setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+        };
+    });
+    </script>
 </body>
 </html>
