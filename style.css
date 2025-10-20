@@ -174,7 +174,7 @@ body {
 .chi-siamo h2,
 .servizi h2,
 .prezzi h2,
-.contatti h2
+.contatti h2,
 .instagram h2 {
     text-align: center;
     font-size: 2.5rem;
@@ -436,7 +436,8 @@ footer i {
 
     .chi-siamo h2,
     .servizi h2,
-    .contatti h2 {
+    .contatti h2,
+    .instagram h2 {
         font-size: 2rem;
     }
 
