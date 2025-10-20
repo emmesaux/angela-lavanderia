@@ -102,35 +102,18 @@ console.log('Angela Lavanderia - Sito web caricato correttamente!');
 async function loadInstagramFeed() {
   const el = document.getElementById('insta-feed');
   if (!el) return;
-  
+
   try {
-    // Usa Instagram Graph API tramite RapidAPI
-    const response = await fetch('https://instagram-data-api.p.rapidapi.com/profile/lavanderia_angela_/info', {
-      method: 'GET',
-      headers: {
-        'x-rapidapi-key': 'cd12c6bd5dmshd1f0e2d8c4c8263p154c72jsn5f1e7edccfdc',
-        'x-rapidapi-host': 'instagram-data-api.p.rapidapi.com'
-      }
-    });
+    // Carica i dati Instagram dal file JSON generato da GitHub Actions
+    const response = await fetch('./data/instagram.json');
 
     if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
+      throw new Error(`Failed to load Instagram data: ${response.status}`);
     }
 
     const data = await response.json();
-    
-    // Fetch i post
-    const postsResponse = await fetch(`https://instagram-data-api.p.rapidapi.com/profile/lavanderia_angela_/posts`, {
-      method: 'GET',
-      headers: {
-        'x-rapidapi-key': 'cd12c6bd5dmshd1f0e2d8c4c8263p154c72jsn5f1e7edccfdc',
-        'x-rapidapi-host': 'instagram-data-api.p.rapidapi.com'
-      }
-    });
+    const posts = data.items || [];
 
-    const postsData = await postsResponse.json();
-    const posts = postsData.posts || [];
-    
     if (!posts.length) {
       el.innerHTML = '<p class="insta-fallback">Nessun post disponibile. <a href="https://www.instagram.com/lavanderia_angela_/" target="_blank">Visita il nostro profilo</a></p>';
       return;
@@ -142,12 +125,12 @@ async function loadInstagramFeed() {
     items.forEach(post => {
       const a = document.createElement('a');
       a.className = 'insta-item';
-      a.href = `https://www.instagram.com/p/${post.shortcode}/`;
+      a.href = post.link;
       a.target = '_blank';
       a.rel = 'noopener';
       
       const img = document.createElement('img');
-      img.src = post.image_url || post.display_url;
+      img.src = post.image;
       img.alt = (post.caption || '').substring(0, 50);
       img.loading = 'lazy';
       img.onerror = () => { 
@@ -156,9 +139,7 @@ async function loadInstagramFeed() {
       
       a.appendChild(img);
       el.appendChild(a);
-    });
-    
-    console.log('Instagram feed loaded:', items.length, 'posts');
+    });    console.log('Instagram feed loaded:', posts.length, 'posts');
   } catch (err) {
     console.error('Instagram feed error:', err);
     el.innerHTML = `

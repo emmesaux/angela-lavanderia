@@ -1,22 +1,22 @@
-{
+﻿{
   "items": [
     {
-      "id": "DNWDfPRiiS7",
-      "image": "https://www.instagram.com/p/DNWDfPRiiS7/media/?size=l",
-      "link": "https://www.instagram.com/p/DNWDfPRiiS7/",
-      "caption": "Servizio di lavanderia professionale"
+      "id": "sample-1",
+      "image": "https://via.placeholder.com/300x300/ddd/666?text=Instagram+Post",
+      "link": "https://www.instagram.com/lavanderia_angela_/",
+      "caption": "Servizio di lavanderia professionale - esempio"
     },
     {
-      "id": "example-2",
-      "image": "https://images.unsplash.com/photo-1546920534-30b8168faf38?w=300&h=300&fit=crop",
+      "id": "sample-2",
+      "image": "https://via.placeholder.com/300x300/eee/666?text=Instagram+Post",
       "link": "https://www.instagram.com/lavanderia_angela_/",
-      "caption": "Stiratura professionale"
+      "caption": "Pulizia a secco e lavanderia - esempio"
     },
     {
-      "id": "example-3",
-      "image": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=300&fit=crop",
+      "id": "sample-3",
+      "image": "https://via.placeholder.com/300x300/f0f0f0/666?text=Instagram+Post",
       "link": "https://www.instagram.com/lavanderia_angela_/",
-      "caption": "Pulizia a secco di qualità"
+      "caption": "Servizi veloci e affidabili - esempio"
     }
   ]
 }
