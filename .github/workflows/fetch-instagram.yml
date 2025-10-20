@@ -1,0 +1,29 @@
+name: Update Instagram feed
+on:
+  schedule:
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Fetch Instagram media
+        env:
+          INSTAGRAM_USER_ID: ${{ secrets.INSTAGRAM_USER_ID }}
+          INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
+        run: |
+          mkdir -p data
+          curl -s "https://graph.instagram.com/${INSTAGRAM_USER_ID}/media?fields=id,caption,media_url,permalink,media_type,thumbnail_url,timestamp&limit=12&access_token=${INSTAGRAM_ACCESS_TOKEN}" -o data/api.json
+          node -e "const fs=require('fs'); const r=fs.existsSync('data/api.json')?JSON.parse(fs.readFileSync('data/api.json')):{data:[]}; const items=(r.data||[]).filter(i=>i.media_type!=='VIDEO').slice(0,9).map(i=>({id:i.id,image:i.media_url||i.thumbnail_url,permalink:i.permalink,caption:(i.caption||'').replace(/\\n/g,' ')})); fs.writeFileSync('data/instagram.json', JSON.stringify({items},null,2));"
+      - name: Commit & Push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/instagram.json
+          git commit -m "Update Instagram feed" || echo "No changes"
+          git push

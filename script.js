@@ -98,3 +98,32 @@ window.addEventListener('scroll', () => {
 });
 
 console.log('Angela Lavanderia - Sito web caricato correttamente!');
+
+async function loadInstagramFeed() {
+  const el = document.getElementById('insta-feed');
+  if (!el) return;
+  try {
+    const res = await fetch('/data/instagram.json', {cache: 'no-cache'});
+    if (!res.ok) { el.innerHTML = '<p class="insta-fallback">Impossibile caricare feed Instagram.</p>'; return; }
+    const data = await res.json();
+    const items = (data.items || []).slice(0,9);
+    if (!items.length) { el.innerHTML = '<p class="insta-fallback">Nessun post disponibile. <a href="https://instagram.com/lavanderia_angela_">Visita Instagram</a></p>'; return; }
+    el.innerHTML = '';
+    items.forEach(item => {
+      const a = document.createElement('a');
+      a.className = 'insta-item';
+      a.href = item.permalink;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      const img = document.createElement('img');
+      img.src = item.image;
+      img.alt = item.caption || 'Instagram post';
+      a.appendChild(img);
+      el.appendChild(a);
+    });
+  } catch (err) {
+    console.error('Instagram feed error', err);
+    el.innerHTML = '<p class="insta-fallback">Errore caricamento feed. <a href="https://instagram.com/lavanderia_angela_">Instagram</a></p>';
+  }
+}
+document.addEventListener('DOMContentLoaded', loadInstagramFeed);
