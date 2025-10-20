@@ -42,7 +42,7 @@ jobs:
           mkdir -p data
           # Fetch and capture HTTP status
           URL="https://graph.facebook.com/v24.0/${IG_USER_ID}/media?fields=id,caption,media_type,media_url,thumbnail_url,permalink,timestamp,children{media_url,thumbnail_url,media_type}&limit=6&access_token=${IG_ACCESS_TOKEN}"
-          http_code=$(curl -s -o /dev/null -w "%{http_code}" "$URL")
+          http_code=$(curl -s -I "$URL" | head -n 1 | cut -d' ' -f2)
           if [ "$http_code" -ne 200 ]; then
             echo "Graph API returned HTTP $http_code";
             exit 1;
