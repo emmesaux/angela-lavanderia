@@ -11,41 +11,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+      - name: Fetch Instagram feed
+        uses: smatak/instagram-action@v2
         with:
-          php-version: '8.1'
-
-      - name: Clone Instagram User Feed
-        run: |
-          git clone https://github.com/pgrimaud/instagram-user-feed.git temp_feed
-
-      - name: Fetch Instagram media
-        run: |
-          cd temp_feed
-          php src/Instagram.php --username angelalavanderia --count 9 > ../data/instagram_raw.json
-          cd ..
-          node -e "
-            const fs = require('fs');
-            let raw = [];
-            try {
-              raw = JSON.parse(fs.readFileSync('data/instagram_raw.json', 'utf8'));
-            } catch (e) {
-              console.log('Error parsing raw data:', e.message);
-            }
-            const items = raw.slice(0,9).map(item => ({
-              id: item.id,
-              image: item.display_url,
-              permalink: item.link,
-              caption: (item.caption || '').replace(/\n/g, ' ')
-            }));
-            fs.writeFileSync('data/instagram.json', JSON.stringify({items}, null, 2));
-          "
+          username: lavanderia_angela_
+          output_file: data/instagram.json
 
       - name: Commit & Push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/instagram.json
-          git commit -m "Update Instagram feed" || echo "No changes"
-          git push
+          if git diff --quiet data/instagram.json; then
+            echo "No changes to commit"
+          else
+            git add data/instagram.json
+            git commit -m "Update Instagram feed"
+            git push
+          fi

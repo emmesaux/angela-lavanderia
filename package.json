@@ -1,0 +1,12 @@
+{
+  "name": "angela-lavanderia",
+  "version": "1.0.0",
+  "description": "Website for Angela Lavanderia",
+  "main": "script.js",
+  "scripts": {
+    "update-instagram": "node update_instagram.js"
+  },
+  "dependencies": {
+    "instagram-web-api": "^2.2.2"
+  }
+}

@@ -15,7 +15,7 @@ jobs:
       - name: Fetch Instagram media
         env:
           INSTAGRAM_USER_ID: ${{ secrets.INSTAGRAM_USER_ID }}
-          INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
+          INSTAGRAM_ACCESS_TOKEN: ${{ secrets.1314006096583166|BLdYN6U-q80bdqQGmnGFnAOZUyQ }}
         run: |
           mkdir -p data
           curl -s "https://graph.instagram.com/${INSTAGRAM_USER_ID}/media?fields=id,caption,media_url,permalink,media_type,thumbnail_url,timestamp&limit=12&access_token=${INSTAGRAM_ACCESS_TOKEN}" -o data/api.json
