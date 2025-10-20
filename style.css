@@ -189,7 +189,9 @@ body {
     align-items: center;
 }
 
-.content-text p {
+.content-text p,
+.instagram p
+{
     font-size: 1.1rem;
     color: var(--text-light);
     margin-bottom: 1rem;
