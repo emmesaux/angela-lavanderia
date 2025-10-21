@@ -646,12 +646,44 @@ footer i {
     display: flex;
     gap: 0.6rem;
 }
+.cookie-banner .cookie-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 0.4rem;
+}
 .cookie-banner .cookie-link {
     color: var(--primary-color);
     text-decoration: underline;
+}
+.cookie-banner .cookie-preferences {
+    margin-top: 0.9rem;
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+.cookie-pref-title {
+    font-weight: 600;
+    margin: 0;
+}
+.cookie-preferences label {
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-start;
+    font-size: 0.9rem;
+}
+.cookie-preferences input[type="checkbox"] {
+    margin-top: 0.2rem;
+}
+.cookie-pref-actions {
+    display: flex;
+    justify-content: flex-end;
 }
 
 @media (max-width: 480px) {
     .cookie-banner { left: 10px; right: 10px; bottom: 12px; flex-direction: column; gap: 0.7rem; align-items: stretch; }
     .cookie-banner .cookie-actions { justify-content: flex-end; }
+    .cookie-banner .cookie-links { flex-direction: column; align-items: flex-start; }
 }

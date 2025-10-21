@@ -1,94 +1,93 @@
-// Menu hamburger responsivo
-const hamburger = document.querySelector('.hamburger');
-const navLinks = document.querySelector('.nav-links');
+function onReady(cb) {
+  if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', cb, { once: true });
+  } else {
+  cb();
+  }
+}
 
-hamburger.addEventListener('click', () => {
+// Menu hamburger responsivo e gestione nav attiva
+onReady(() => {
+  const hamburger = document.querySelector('.hamburger');
+  const navLinks = document.querySelector('.nav-links');
+  if (!hamburger || !navLinks) return;
+
+  hamburger.addEventListener('click', () => {
     navLinks.classList.toggle('active');
-});
+  });
 
-// Chiudi menu quando clicchi su un link
-document.querySelectorAll('.nav-links a').forEach(link => {
-    link.addEventListener('click', () => {
-        navLinks.classList.remove('active');
-    });
-});
-
-// Aggiungi gestione stato active per i link di navigazione
-const navAnchors = document.querySelectorAll('.nav-links a');
-navAnchors.forEach(a => {
+  const navAnchors = navLinks.querySelectorAll('a');
+  navAnchors.forEach(a => {
     a.addEventListener('click', () => {
-        navAnchors.forEach(x => x.classList.remove('active'));
-        a.classList.add('active');
+      navLinks.classList.remove('active');
+      navAnchors.forEach(x => x.classList.remove('active'));
+      a.classList.add('active');
     });
-});
+  });
 
-// IntersectionObserver per aggiornare il link attivo mentre si scorre
-const sections = document.querySelectorAll('section[id]');
-const observerOptions = { root: null, rootMargin: '0px', threshold: 0.5 };
-const sectionObserver = new IntersectionObserver((entries) => {
+  const sections = document.querySelectorAll('section[id]');
+  const observerOptions = { root: null, rootMargin: '0px', threshold: 0.5 };
+  const sectionObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-        const id = entry.target.getAttribute('id');
-        const navLink = document.querySelector(`.nav-links a[href="#${id}"]`);
-        if (entry.isIntersecting) {
-            navAnchors.forEach(x => x.classList.remove('active'));
-            if (navLink) navLink.classList.add('active');
-        }
+      const id = entry.target.getAttribute('id');
+      const navLink = navLinks.querySelector(`a[href="#${id}"]`);
+      if (entry.isIntersecting) {
+        navAnchors.forEach(x => x.classList.remove('active'));
+        if (navLink) navLink.classList.add('active');
+      }
     });
-}, observerOptions);
-sections.forEach(section => sectionObserver.observe(section));
+  }, observerOptions);
+  sections.forEach(section => sectionObserver.observe(section));
 
-// Scroll smooth per i link di navigazione
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
         e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     });
+  });
 });
 
-// Animazione di scroll rivela elementi
+// Animazioni sezioni
 const revealElements = () => {
-    const elements = document.querySelectorAll('.servizio-card, .prezzo-card, .info-box');
-    elements.forEach(element => {
-        const elementTop = element.getBoundingClientRect().top;
-        const elementBottom = element.getBoundingClientRect().bottom;
-        
-        if (elementTop < window.innerHeight && elementBottom > 0) {
-            element.style.opacity = '1';
-            element.style.transform = 'translateY(0)';
-        }
-    });
+  const elements = document.querySelectorAll('.servizio-card, .prezzo-card, .info-box');
+  elements.forEach(element => {
+    const elementTop = element.getBoundingClientRect().top;
+    const elementBottom = element.getBoundingClientRect().bottom;
+    if (elementTop < window.innerHeight && elementBottom > 0) {
+      element.style.opacity = '1';
+      element.style.transform = 'translateY(0)';
+    }
+  });
 };
 
-// Aggiungi stili iniziali agli elementi
 const initializeElements = () => {
-    const elements = document.querySelectorAll('.servizio-card, .prezzo-card, .info-box');
-    elements.forEach(element => {
-        element.style.opacity = '0';
-        element.style.transform = 'translateY(20px)';
-        element.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-    });
+  const elements = document.querySelectorAll('.servizio-card, .prezzo-card, .info-box');
+  elements.forEach(element => {
+    element.style.opacity = '0';
+    element.style.transform = 'translateY(20px)';
+    element.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+  });
 };
 
-window.addEventListener('scroll', revealElements);
-window.addEventListener('load', () => {
-    initializeElements();
-    revealElements();
+onReady(() => {
+  initializeElements();
+  revealElements();
+  window.addEventListener('scroll', revealElements);
 });
 
 /* ----------------------------------------------------------------- */
-/* Cookie consent banner (GDPR)                                       */
+/* Cookie consent banner (GDPR) con preferenze                        */
 /* ----------------------------------------------------------------- */
+const defaultConsent = { necessary: true, functional: false, analytics: false };
+
 function setCookie(name, value, days) {
   let expires = '';
   if (days) {
     const date = new Date();
-    date.setTime(date.getTime() + (days*24*60*60*1000));
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
     expires = '; expires=' + date.toUTCString();
   }
   document.cookie = `${name}=${value || ''}${expires}; path=/; Secure; SameSite=Lax`;
@@ -101,42 +100,27 @@ function getCookie(name) {
   return null;
 }
 
-function hasCookieConsent() {
-  return getCookie('cookie_consent') !== null;
+function getConsent() {
+  const raw = getCookie('cookie_consent');
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(decodeURIComponent(raw));
+    return { ...defaultConsent, ...parsed };
+  } catch (err) {
+    console.warn('Unable to parse cookie consent value, resetting.', err);
+    return { ...defaultConsent };
+  }
 }
 
-function isConsentAccepted() {
-  return getCookie('cookie_consent') === 'all';
+function saveConsent(consent) {
+  const normalized = { ...defaultConsent, ...consent };
+  setCookie('cookie_consent', encodeURIComponent(JSON.stringify(normalized)), 365);
 }
 
-function showCookieBanner() {
-  if (hasCookieConsent()) return;
-  const banner = document.createElement('div');
-  banner.className = 'cookie-banner';
-  banner.setAttribute('role', 'dialog');
-  banner.setAttribute('aria-live', 'polite');
-  banner.innerHTML = `
-    <div class="cookie-message">
-      <strong>Usiamo i cookie</strong>
-      <span>Questo sito utilizza cookie per migliorare l'esperienza. Puoi accettare o rifiutare i cookie non essenziali.</span>
-      <a href="/cookie.html" class="cookie-link">Cookie Policy</a>
-    </div>
-    <div class="cookie-actions">
-      <button class="btn btn-primary" id="cookie-accept">Accetta</button>
-      <button class="btn btn-outline" id="cookie-reject">Rifiuta</button>
-    </div>
-  `;
-  document.body.appendChild(banner);
-
-  document.getElementById('cookie-accept').addEventListener('click', () => {
-    setCookie('cookie_consent', 'all', 365);
-    removeCookieBanner();
-    runPostConsent();
-  });
-  document.getElementById('cookie-reject').addEventListener('click', () => {
-    setCookie('cookie_consent', 'none', 365);
-    removeCookieBanner();
-  });
+function hasConsent(category) {
+  const consent = getConsent();
+  if (!consent) return false;
+  return !!consent[category];
 }
 
 function removeCookieBanner() {
@@ -144,16 +128,114 @@ function removeCookieBanner() {
   if (banner) banner.remove();
 }
 
-function runPostConsent() {
-  // Placeholder: initialize analytics or other non-essential scripts
-  if (isConsentAccepted()) {
-    // e.g. loadAnalytics();
-    console.log('Cookie consent accepted — you may initialize analytics.');
+function showCookieBanner() {
+  const existing = getConsent() || { ...defaultConsent };
+  if (existing && existing.necessary && (existing.functional || existing.analytics)) {
+    runPostConsent();
+    return;
+  }
+
+  const banner = document.createElement('div');
+  banner.className = 'cookie-banner';
+  banner.setAttribute('role', 'dialog');
+  banner.setAttribute('aria-live', 'polite');
+  banner.innerHTML = `
+    <div class="cookie-message">
+      <strong>Preferenze cookie</strong>
+      <span>I cookie necessari sono sempre attivi. Seleziona le categorie opzionali che desideri abilitare.</span>
+      <div class="cookie-links">
+        <a href="/privacy.html" class="cookie-link">Privacy</a>
+        <button type="button" class="cookie-preferences-toggle">Preferenze</button>
+        <a href="/cookie.html" class="cookie-link">Cookie Policy</a>
+      </div>
+    </div>
+    <div class="cookie-actions">
+      <button type="button" class="btn btn-primary" id="cookie-accept">Accetta tutto</button>
+      <button type="button" class="btn btn-outline" id="cookie-reject">Rifiuta</button>
+    </div>
+    <div class="cookie-preferences" hidden>
+      <p class="cookie-pref-title">Categorie opzionali</p>
+      <label>
+        <input type="checkbox" data-category="functional">
+        <span>Cookie funzionali (ricordano tema e impostazioni, abilitano contenuti avanzati).</span>
+      </label>
+      <label>
+        <input type="checkbox" data-category="analytics">
+        <span>Cookie statistici anonimi per migliorare il servizio.</span>
+      </label>
+      <div class="cookie-pref-actions">
+        <button type="button" class="btn btn-primary" id="cookie-save">Salva preferenze</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(banner);
+
+  const prefPanel = banner.querySelector('.cookie-preferences');
+  const prefInputs = banner.querySelectorAll('input[data-category]');
+  prefInputs.forEach(input => {
+    const cat = input.getAttribute('data-category');
+    input.checked = !!existing[cat];
+  });
+
+  const toggleBtn = banner.querySelector('.cookie-preferences-toggle');
+  toggleBtn.addEventListener('click', () => {
+    const hidden = prefPanel.hasAttribute('hidden');
+    if (hidden) {
+      prefPanel.removeAttribute('hidden');
+      prefPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } else {
+      prefPanel.setAttribute('hidden', '');
+    }
+  });
+
+  banner.querySelector('#cookie-accept').addEventListener('click', () => {
+    saveConsent({ necessary: true, functional: true, analytics: true });
+    removeCookieBanner();
+    runPostConsent();
+  });
+
+  banner.querySelector('#cookie-reject').addEventListener('click', () => {
+    saveConsent({ necessary: true, functional: false, analytics: false });
+    removeCookieBanner();
+    runPostConsent();
+  });
+
+  banner.querySelector('#cookie-save').addEventListener('click', () => {
+    const selections = { necessary: true };
+    prefInputs.forEach(input => {
+      selections[input.getAttribute('data-category')] = input.checked;
+    });
+    saveConsent(selections);
+    removeCookieBanner();
+    runPostConsent();
+  });
+}
+
+function handleConsentEffects() {
+  const consent = getConsent();
+  if (!consent) return;
+
+  if (!consent.functional) {
+    try { localStorage.removeItem('theme'); } catch (e) {}
+    applyTheme(getPreferredTheme());
+  }
+
+  if (consent.analytics) {
+    console.log('Analytics consent granted – ready to initialize tracking.');
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  showCookieBanner();
+function runPostConsent() {
+  handleConsentEffects();
+}
+
+onReady(() => {
+  const consent = getConsent();
+  if (consent) {
+    runPostConsent();
+  } else {
+    showCookieBanner();
+  }
 });
 
 /* ----------------------------------------------------------------- */
@@ -166,8 +248,8 @@ function applyTheme(theme) {
 }
 
 function getStoredTheme() {
-  // store theme only if cookie consent defined and accepted
-  if (isConsentAccepted()) {
+  // store theme only if cookie consent definito e abilitato per i cookie funzionali
+  if (hasConsent('functional')) {
     try { return localStorage.getItem('theme'); } catch (e) { return null; }
   }
   return null;
@@ -182,12 +264,14 @@ function getPreferredTheme() {
 
 function setTheme(theme) {
   applyTheme(theme);
-  if (isConsentAccepted()) {
+  if (hasConsent('functional')) {
     try { localStorage.setItem('theme', theme); } catch (e) {}
+  } else {
+    try { localStorage.removeItem('theme'); } catch (e) {}
   }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+onReady(function() {
   applyTheme(getPreferredTheme());
   const themeToggle = document.getElementById('theme-toggle');
   if (themeToggle) {
@@ -299,43 +383,4 @@ async function loadInstagramFeed() {
     `;
   }
 }
-document.addEventListener('DOMContentLoaded', loadInstagramFeed);
-
-// Lazy-load Google Maps iframe only after consent or manual click
-function loadMapIfAllowed() {
-  const wrapper = document.getElementById('map-wrapper');
-  if (!wrapper) return;
-  const mapSrc = wrapper.getAttribute('data-map-src');
-  if (!mapSrc) return;
-  if (isConsentAccepted()) {
-    const iframe = document.createElement('iframe');
-    iframe.src = mapSrc;
-    iframe.width = '600';
-    iframe.height = '450';
-    iframe.style.border = '0';
-    iframe.loading = 'lazy';
-    iframe.setAttribute('allowfullscreen', '');
-    iframe.setAttribute('referrerpolicy', 'no-referrer-when-downgrade');
-    wrapper.innerHTML = '';
-    wrapper.appendChild(iframe);
-  }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  loadMapIfAllowed();
-  const btn = document.getElementById('load-map');
-  if (btn) btn.addEventListener('click', () => {
-    const wrapper = document.getElementById('map-wrapper');
-    const mapSrc = wrapper.getAttribute('data-map-src');
-    const iframe = document.createElement('iframe');
-    iframe.src = mapSrc;
-    iframe.width = '600';
-    iframe.height = '450';
-    iframe.style.border = '0';
-    iframe.loading = 'lazy';
-    iframe.setAttribute('allowfullscreen', '');
-    iframe.setAttribute('referrerpolicy', 'no-referrer-when-downgrade');
-    wrapper.innerHTML = '';
-    wrapper.appendChild(iframe);
-  });
-});
+onReady(loadInstagramFeed);
