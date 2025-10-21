@@ -60,9 +60,30 @@ jobs:
         run: |
           set -eux
           mkdir -p data
-          URL="https://graph.facebook.com/v24.0/${IG_USER_ID}/media?fields=id,caption,media_type,media_url,thumbnail_url,permalink,timestamp,children{media_url,thumbnail_url,media_type}&limit=6&access_token=${IG_ACCESS_TOKEN}"
-          echo "Requesting: $URL"
-          http_code=$(curl -s -o data/instagram-raw.json -w "%{http_code}" "$URL")
+          # Determine target IG user id to use
+          target_ig_id="${IG_USER_ID}"
+          if [ -z "${target_ig_id}" ] || [ "${target_ig_id}" = "null" ]; then
+            echo "IG_USER_ID not set — attempting to detect from connected Pages..."
+            target_ig_id=$(curl -s "https://graph.facebook.com/v24.0/me/accounts?fields=instagram_business_account&access_token=${IG_ACCESS_TOKEN}" | jq -r '.data[]?.instagram_business_account.id' | head -n1)
+            if [ -z "${target_ig_id}" ] || [ "${target_ig_id}" = "null" ]; then
+              echo "Could not detect an Instagram Business Account ID from pages connected to this token. Please set the 'IG_USER_ID' secret to the Instagram account id.";
+              echo "Dump of /me/accounts response:";
+              curl -s "https://graph.facebook.com/v24.0/me/accounts?fields=instagram_business_account&access_token=${IG_ACCESS_TOKEN}" | jq . || true;
+              exit 1;
+            fi
+            echo "Detected IG user id: ${target_ig_id}"
+          fi
+
+          # Verify that the detected ID is reachable with the token
+          verify_code=$(curl -s -o /tmp/target.json -w "%{http_code}" "https://graph.facebook.com/v24.0/${target_ig_id}?fields=id,username&access_token=${IG_ACCESS_TOKEN}")
+          if [ "$verify_code" -ne 200 ]; then
+            echo "Failed to verify IG user id ${target_ig_id} (HTTP $verify_code)";
+            cat /tmp/target.json | jq . || true;
+            exit 1;
+          fi
+          echo "Fetching media for IG user id: ${target_ig_id}"
+          URL_PATH="/${target_ig_id}/media?fields=id,caption,media_type,media_url,thumbnail_url,permalink,timestamp,children{media_url,thumbnail_url,media_type}&limit=6"
+          http_code=$(curl -s -o data/instagram-raw.json -w "%{http_code}" "https://graph.facebook.com/v24.0${URL_PATH}&access_token=${IG_ACCESS_TOKEN}")
           if [ "$http_code" -ne 200 ]; then
             echo "Graph API returned HTTP $http_code";
             echo "Response body:";
