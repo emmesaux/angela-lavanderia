@@ -235,7 +235,20 @@ function showCookieBanner() {
     const action = document.createElement('div');
     action.className = 'service-action';
     if (s.category === 'necessary') {
-      action.innerHTML = `<span class="pill on">Obbligatorio</span>`;
+      // show a non-removable checked box and label for necessary cookies
+      const lbl = document.createElement('label');
+      lbl.className = 'mandatory';
+      const chk = document.createElement('input');
+      chk.type = 'checkbox';
+      chk.checked = true;
+      chk.disabled = true;
+      chk.setAttribute('aria-label', 'Obbligatorio');
+      const txt = document.createElement('span');
+      txt.className = 'mandatory-text';
+      txt.textContent = 'Obbligatorio';
+      lbl.appendChild(chk);
+      lbl.appendChild(txt);
+      action.appendChild(lbl);
     } else {
       const input = document.createElement('input');
       input.type = 'checkbox';

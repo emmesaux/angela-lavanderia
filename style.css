@@ -698,6 +698,9 @@ footer i {
 .service:last-child { border-bottom: none; }
 .service-info p { margin: 0.2rem 0 0 0; font-size: 0.9rem; color: var(--text-muted); }
 .service-action .pill.on { background: #e9ecef; padding: 0.2rem 0.5rem; border-radius: 10px; font-size: 0.8rem; }
+.service-action label.mandatory { display: flex; gap: 0.5rem; align-items: center; }
+.service-action input[disabled] { cursor: default; width: 22px; height: 22px; accent-color: var(--primary-color); border-radius: 4px; }
+.service-action .mandatory-text { background: #e9ecef; padding: 0.35rem 0.8rem; border-radius: 999px; font-size: 0.9rem; color: var(--text-light); font-weight: 600; }
 
 #cookie-scan-results {
     margin-top: 0.8rem;
