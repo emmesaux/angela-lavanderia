@@ -81,6 +81,9 @@ onReady(() => {
 /* ----------------------------------------------------------------- */
 /* Cookie consent banner (GDPR) con preferenze                        */
 /* ----------------------------------------------------------------- */
+// Toggle to use Iubenda's solution instead of the local banner.
+// Set to `true` to prefer Iubenda (we'll keep local code for now but it won't run).
+const USE_IUBENDA = true;
 const defaultConsent = { necessary: true, functional: false, analytics: false, marketing: false };
 
 // Known services for cookie management
@@ -235,6 +238,7 @@ function removeCookieBanner() {
 }
 
 function showCookieBanner(force = false) {
+  if (USE_IUBENDA) return; // local banner disabled because Iubenda is active
   const consentValue = getConsent();
   // Check whether consent was previously confirmed (some older states may have cookie_consent without confirmation)
   let confirmed = getCookie('cookie_consent_confirmed');
@@ -296,8 +300,9 @@ function showCookieBanner(force = false) {
       <button type="button" class="btn btn-primary" id="cookie-save">Salva preferenze</button>
     </div>
   `;
+  // place preferences panel inside the card so it displays below the main row
+  card.appendChild(prefPanelEl);
   banner.appendChild(card);
-  banner.appendChild(prefPanelEl);
   document.body.appendChild(banner);
   // record shown timestamp for minimum-visible guard
   try { banner.dataset.shownAt = String(Date.now()); } catch (e) {}
@@ -527,13 +532,19 @@ onReady(() => {
   if (consent && confirmed && ts) {
     runPostConsent();
   } else {
+    // Show local banner only when explicitly forced (default is to use Iubenda)
     showCookieBanner();
   }
   const manageLink = document.getElementById('cookie-manage');
   if (manageLink) {
     manageLink.addEventListener('click', (e) => {
       e.preventDefault();
-      // if the banner already exists, toggle the preferences panel
+      if (typeof window.iub !== 'undefined' && window.iub && window.iub.cs) {
+        // Open iubenda cookie preferences panel if available
+        try { window.iub.cs.open(); } catch (e) { console.warn('Unable to open Iubenda CS panel', e); }
+        return;
+      }
+      // Fallback: toggle our local banner if Iubenda is not available
       const banner = document.querySelector('.cookie-banner');
       if (banner) {
         const pref = banner.querySelector('.cookie-preferences');

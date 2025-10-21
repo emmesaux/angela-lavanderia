@@ -39,7 +39,9 @@
   }
   </script>
 
-  <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css">
+    <!-- Iubenda Privacy Controls & Cookie Solution (embed snippet) -->
+    <script type="text/javascript" src="https://embeds.iubenda.com/widgets/e88e4a7f-5f9e-4d4a-bbeb-69d943ef2e64.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="icon" href="images/logo.png" type="image/png" style="border-radius: 30%;">
 
@@ -238,7 +240,17 @@
     <footer>
         <div class="container">
             <p>&copy; 2025 Angela Lavanderia. Tutti i diritti riservati.</p>
-            <p><a href="privacy.html">Privacy</a> • <a href="cookie.html">Cookie</a> • <a href="terms.html">Termini</a> • <a href="#" id="cookie-manage">Gestisci cookie</a></p>
+                        <p>
+                            <!-- Iubenda links -->
+                            <a href="https://www.iubenda.com/privacy-policy/75516412" class="iubenda-white iubenda-noiframe iubenda-embed" title="Privacy Policy">Privacy Policy</a>
+                            •
+                            <a href="https://www.iubenda.com/privacy-policy/75516412/cookie-policy" class="iubenda-white iubenda-noiframe iubenda-embed" title="Cookie Policy">Cookie Policy</a>
+                            • <a href="terms.html">Termini</a> • <a href="#" id="cookie-manage">Gestisci cookie</a>
+                        </p>
+                        <!-- Iubenda loader (single instance for the page) -->
+                        <script type="text/javascript">
+                            (function (w,d) {var loader = function () {var s = d.createElement("script"), tag = d.getElementsByTagName("script")[0]; s.src="https://cdn.iubenda.com/iubenda.js"; tag.parentNode.insertBefore(s,tag);}; if(w.addEventListener){w.addEventListener("load", loader, false);}else if(w.attachEvent){w.attachEvent("onload", loader);}else{w.onload = loader;}})(window, document);
+                        </script>
             <p>Sito realizzato dalla Technical In-Engine</p>
         </div>
     </footer>
