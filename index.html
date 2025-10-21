@@ -249,26 +249,5 @@
     </footer>
 
     <script src="script.js"></script>
-    <script>
-    // Modalità light/dark
-    function setTheme(theme) {
-        document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('theme', theme);
-        document.getElementById('theme-toggle').innerHTML = theme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-    }
-    function getPreferredTheme() {
-        const stored = localStorage.getItem('theme');
-        if (stored) return stored;
-        if (window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
-        return 'light';
-    }
-    document.addEventListener('DOMContentLoaded', function() {
-        setTheme(getPreferredTheme());
-        document.getElementById('theme-toggle').onclick = function(e) {
-            e.stopPropagation();
-            setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
-        };
-    });
-    </script>
 </body>
 </html>
