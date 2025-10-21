@@ -206,26 +206,30 @@ function showCookieBanner() {
       </div>
     </div>
     <div class="cookie-actions">
-      <button type="button" class="btn btn-primary" id="cookie-accept">Accetta tutto</button>
       <button type="button" class="btn btn-outline" id="cookie-reject">Rifiuta</button>
-      
-    </div>
-  <div class="cookie-preferences" hidden>
-      <p class="cookie-pref-title">Categorie opzionali</p>
-      <div class="services-list">
-        <!-- Services will be populated via JavaScript -->
-      </div>
-      <div class="cookie-pref-actions">
-        <button type="button" class="btn btn-primary" id="cookie-save">Salva preferenze</button>
-      </div>
+      <button type="button" class="btn btn-primary" id="cookie-accept">Accetta tutto</button>
+      <button type="button" class="btn" id="cookie-preferences-toggle" title="Mostra preferenze">Preferenze</button>
     </div>
   `;
+
+  // Preferences panel (will be shown below the card if toggled)
+  const prefPanelEl = document.createElement('div');
+  prefPanelEl.className = 'cookie-preferences';
+  prefPanelEl.hidden = true;
+  prefPanelEl.innerHTML = `
+    <p class="cookie-pref-title">Categorie opzionali</p>
+    <div class="services-list"></div>
+    <div class="cookie-pref-actions">
+      <button type="button" class="btn btn-primary" id="cookie-save">Salva preferenze</button>
+    </div>
+  `;
+  card.appendChild(prefPanelEl);
   banner.appendChild(card);
   document.body.appendChild(banner);
 
-  const prefPanel = card.querySelector('.cookie-preferences');
+  const prefPanel = prefPanelEl;
   // populate services
-  const servicesListEl = card.querySelector('.services-list');
+  const servicesListEl = prefPanelEl.querySelector('.services-list');
   servicesMeta.forEach(s => {
     const div = document.createElement('div');
     div.className = 'service';
@@ -263,21 +267,21 @@ function showCookieBanner() {
     servicesListEl.appendChild(div);
   });
 
-  const toggleBtn = banner.querySelector('.cookie-preferences-toggle');
-  toggleBtn.addEventListener('click', () => {
-    const hidden = prefPanel.hasAttribute('hidden');
-    if (hidden) {
-      prefPanel.removeAttribute('hidden');
-      prefPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    } else {
-      prefPanel.setAttribute('hidden', '');
-    }
-  });
+  const toggleBtn = banner.querySelector('#cookie-preferences-toggle');
+    toggleBtn.addEventListener('click', () => {
+      const hidden = prefPanel.hasAttribute('hidden');
+      if (hidden) {
+        prefPanel.removeAttribute('hidden');
+        prefPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      } else {
+        prefPanel.setAttribute('hidden', '');
+      }
+    });
 
   card.querySelector('#cookie-accept').addEventListener('click', () => {
     // check all non-necessary services
-    card.querySelectorAll('input[data-service]').forEach(i => i.checked = true);
-    const services = collectServiceSelections(card);
+    prefPanel.querySelectorAll('input[data-service]').forEach(i => i.checked = true);
+    const services = collectServiceSelections(prefPanel);
     saveConsent({ necessary: true, functional: true, analytics: true });
     setServiceCookiesFromSelections(services);
     removeCookieBanner();
@@ -286,8 +290,8 @@ function showCookieBanner() {
 
   card.querySelector('#cookie-reject').addEventListener('click', () => {
     // uncheck all optional services
-    card.querySelectorAll('input[data-service]').forEach(i => i.checked = false);
-    const services = collectServiceSelections(card);
+    prefPanel.querySelectorAll('input[data-service]').forEach(i => i.checked = false);
+    const services = collectServiceSelections(prefPanel);
     saveConsent({ necessary: true, functional: false, analytics: false });
     setServiceCookiesFromSelections(services);
     removeCookieBanner();
@@ -295,7 +299,7 @@ function showCookieBanner() {
   });
 
   card.querySelector('#cookie-save').addEventListener('click', () => {
-    const services = collectServiceSelections(card);
+  const services = collectServiceSelections(prefPanel);
     const selections = { necessary: true };
     // derive categories based on selected services
     selections.functional = servicesMeta.some(s => s.category === 'functional' && services[s.id]);
@@ -411,9 +415,18 @@ onReady(() => {
           } else {
             pref.setAttribute('hidden', '');
           }
+          return;
         }
       } else {
         showCookieBanner();
+        // after banner created, open preferences panel
+        setTimeout(() => {
+          const b = document.querySelector('.cookie-banner');
+          if (b) {
+            const p = b.querySelector('.cookie-preferences');
+            if (p) { p.removeAttribute('hidden'); }
+          }
+        }, 50);
       }
     });
   }
