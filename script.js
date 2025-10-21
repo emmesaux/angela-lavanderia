@@ -115,6 +115,29 @@ function getConsent() {
 function saveConsent(consent) {
   const normalized = { ...defaultConsent, ...consent };
   setCookie('cookie_consent', encodeURIComponent(JSON.stringify(normalized)), 365);
+  setCategoryCookies(normalized);
+}
+
+function deleteCategoryCookies() {
+  setCookie('consent_functional', '', -1);
+  setCookie('consent_analytics', '', -1);
+  setCookie('theme', '', -1);
+  setCookie('analytics_enabled', '', -1);
+}
+
+function setCategoryCookies(consent) {
+  setCookie('consent_functional', consent.functional ? '1' : '0', 365);
+  setCookie('consent_analytics', consent.analytics ? '1' : '0', 365);
+  if (consent.functional) {
+    try { const t = localStorage.getItem('theme'); if (t) setCookie('theme', t, 365); } catch (e) {}
+  } else {
+    setCookie('theme', '', -1);
+  }
+  if (consent.analytics) {
+    setCookie('analytics_enabled', '1', 365);
+  } else {
+    setCookie('analytics_enabled', '', -1);
+  }
 }
 
 function hasConsent(category) {
@@ -137,9 +160,11 @@ function showCookieBanner() {
 
   const banner = document.createElement('div');
   banner.className = 'cookie-banner';
+  const card = document.createElement('div');
+  card.className = 'cookie-card';
   banner.setAttribute('role', 'dialog');
   banner.setAttribute('aria-live', 'polite');
-  banner.innerHTML = `
+  card.innerHTML = `
     <div class="cookie-message">
       <strong>Preferenze cookie</strong>
       <span>I cookie necessari sono sempre attivi. Seleziona le categorie opzionali che desideri abilitare.</span>
@@ -168,10 +193,11 @@ function showCookieBanner() {
       </div>
     </div>
   `;
+  banner.appendChild(card);
   document.body.appendChild(banner);
 
-  const prefPanel = banner.querySelector('.cookie-preferences');
-  const prefInputs = banner.querySelectorAll('input[data-category]');
+  const prefPanel = card.querySelector('.cookie-preferences');
+  const prefInputs = card.querySelectorAll('input[data-category]');
   prefInputs.forEach(input => {
     const cat = input.getAttribute('data-category');
     input.checked = !!existing[cat];
@@ -188,19 +214,19 @@ function showCookieBanner() {
     }
   });
 
-  banner.querySelector('#cookie-accept').addEventListener('click', () => {
+  card.querySelector('#cookie-accept').addEventListener('click', () => {
     saveConsent({ necessary: true, functional: true, analytics: true });
     removeCookieBanner();
     runPostConsent();
   });
 
-  banner.querySelector('#cookie-reject').addEventListener('click', () => {
+  card.querySelector('#cookie-reject').addEventListener('click', () => {
     saveConsent({ necessary: true, functional: false, analytics: false });
     removeCookieBanner();
     runPostConsent();
   });
 
-  banner.querySelector('#cookie-save').addEventListener('click', () => {
+  card.querySelector('#cookie-save').addEventListener('click', () => {
     const selections = { necessary: true };
     prefInputs.forEach(input => {
       selections[input.getAttribute('data-category')] = input.checked;
@@ -235,6 +261,27 @@ onReady(() => {
     runPostConsent();
   } else {
     showCookieBanner();
+  }
+  const manageLink = document.getElementById('cookie-manage');
+  if (manageLink) {
+    manageLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      // if the banner already exists, toggle the preferences panel
+      const banner = document.querySelector('.cookie-banner');
+      if (banner) {
+        const pref = banner.querySelector('.cookie-preferences');
+        if (pref) {
+          if (pref.hasAttribute('hidden')) {
+            pref.removeAttribute('hidden');
+            pref.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          } else {
+            pref.setAttribute('hidden', '');
+          }
+        }
+      } else {
+        showCookieBanner();
+      }
+    });
   }
 });
 
