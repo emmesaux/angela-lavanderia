@@ -83,6 +83,15 @@ onReady(() => {
 /* ----------------------------------------------------------------- */
 const defaultConsent = { necessary: true, functional: false, analytics: false };
 
+// Known services for cookie management
+const servicesMeta = [
+  { id: 'cloudflare', name: 'Cloudflare', desc: 'Content Delivery Network per performance e sicurezza.', category: 'necessary' },
+  { id: 'fastly', name: 'Fastly CDN', desc: 'Content Delivery Network per caching e performance.', category: 'necessary' },
+  { id: 'github_pages', name: 'GitHub Pages', desc: 'Hosting del sito statico.', category: 'necessary' },
+  { id: 'fontawesome', name: 'Font Awesome', desc: 'Libreria di icone per elementi grafici.', category: 'functional' },
+  { id: 'google_maps', name: 'Google Maps Widget', desc: 'Incorpora la mappa interattiva di Google (terze parti).', category: 'functional' }
+];
+
 function setCookie(name, value, days) {
   let expires = '';
   if (days) {
@@ -90,7 +99,11 @@ function setCookie(name, value, days) {
     date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
     expires = '; expires=' + date.toUTCString();
   }
-  document.cookie = `${name}=${value || ''}${expires}; path=/; Secure; SameSite=Lax`;
+  // Only set Secure on HTTPS to allow testing on http/localhost
+  let cookieStr = `${name}=${value || ''}${expires}; path=/; SameSite=Lax`;
+  if (location.protocol === 'https:') cookieStr += '; Secure';
+  document.cookie = cookieStr;
+  console.debug('Set cookie:', name, value);
 }
 
 function getCookie(name) {
@@ -101,33 +114,101 @@ function getCookie(name) {
 }
 
 function getConsent() {
+  // Try cookie first
   const raw = getCookie('cookie_consent');
-  if (!raw) return null;
-  try {
-    const parsed = JSON.parse(decodeURIComponent(raw));
-    return { ...defaultConsent, ...parsed };
-  } catch (err) {
-    console.warn('Unable to parse cookie consent value, resetting.', err);
-    return { ...defaultConsent };
+  if (raw) {
+    try {
+      const parsed = JSON.parse(decodeURIComponent(raw));
+      return { ...defaultConsent, ...parsed };
+    } catch (err) {
+      console.warn('Unable to parse cookie consent value from cookie, trying localStorage.', err);
+    }
   }
+  // Fallback to localStorage
+  try {
+    const rawLS = localStorage.getItem('cookie_consent');
+    console.debug('Read cookie_consent from localStorage:', rawLS);
+    if (rawLS) return { ...defaultConsent, ...JSON.parse(rawLS) };
+  } catch (err) {}
+  return null;
 }
 
 function saveConsent(consent) {
   const normalized = { ...defaultConsent, ...consent };
   setCookie('cookie_consent', encodeURIComponent(JSON.stringify(normalized)), 365);
   setCategoryCookies(normalized);
+  // Also persist in localStorage as fallback when cookies cannot be set
+  try { localStorage.setItem('cookie_consent', JSON.stringify(normalized)); } catch (e) {}
+  console.info('Consent saved:', normalized);
+  // Apply immediate effects
+  handleConsentEffects();
 }
 
+function generateConsentId() {
+  // simple random id
+  return 'c-' + Math.random().toString(36).slice(2, 12) + '-' + Date.now().toString(36);
+}
+
+function downloadConsent() {
+  const consent = getConsent() || {};
+  const id = getCookie('cookie_consent_id') || localStorage.getItem('cookie_consent_id') || generateConsentId();
+  const ts = getCookie('cookie_consent_ts') || localStorage.getItem('cookie_consent_ts') || new Date().toISOString();
+  const meta = { id, ts, domain: location.hostname };
+  const services = {};
+  servicesMeta.forEach(s => { services[s.id] = getServicePreference(s.id, false); });
+  const payload = { meta, consent, services, ua: navigator.userAgent };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `consent-${id}.json`;
+  document.body.appendChild(a);
+  a.click();
+  URL.revokeObjectURL(url);
+  a.remove();
+}
+
+function resetConsent() {
+  // Clear consent and service cookies/localStorage then show banner
+  setCookie('cookie_consent', '', -1);
+  setCookie('cookie_consent_id', '', -1);
+  setCookie('cookie_consent_ts', '', -1);
+  deleteCategoryCookies();
+  try { localStorage.removeItem('cookie_consent'); localStorage.removeItem('cookie_consent_id'); localStorage.removeItem('cookie_consent_ts'); } catch (e) {}
+  removeCookieBanner();
+  showCookieBanner();
+}
+
+function loadGoogleMapNow() {
+  const wrapper = document.getElementById('map-wrapper');
+  if (!wrapper) return;
+  const mapSrc = wrapper.getAttribute('data-map-src');
+  if (!mapSrc) return;
+  if (wrapper.querySelector('iframe')) return; // already loaded
+  const iframe = document.createElement('iframe');
+  iframe.src = mapSrc;
+  iframe.width = '600';
+  iframe.height = '450';
+  iframe.style.border = '0';
+  iframe.loading = 'lazy';
+  iframe.setAttribute('allowfullscreen', '');
+  iframe.setAttribute('referrerpolicy', 'no-referrer-when-downgrade');
+  wrapper.innerHTML = '';
+  wrapper.appendChild(iframe);
+}
 function deleteCategoryCookies() {
   setCookie('consent_functional', '', -1);
   setCookie('consent_analytics', '', -1);
   setCookie('theme', '', -1);
   setCookie('analytics_enabled', '', -1);
+  try { localStorage.removeItem('consent_functional'); localStorage.removeItem('consent_analytics'); localStorage.removeItem('theme'); localStorage.removeItem('analytics_enabled'); } catch (e) {}
 }
 
 function setCategoryCookies(consent) {
   setCookie('consent_functional', consent.functional ? '1' : '0', 365);
   setCookie('consent_analytics', consent.analytics ? '1' : '0', 365);
+  console.debug('Category cookies set: functional=', consent.functional, 'analytics=', consent.analytics);
+  try { localStorage.setItem('consent_functional', consent.functional ? '1' : '0'); localStorage.setItem('consent_analytics', consent.analytics ? '1' : '0'); } catch (e) {}
   if (consent.functional) {
     try { const t = localStorage.getItem('theme'); if (t) setCookie('theme', t, 365); } catch (e) {}
   } else {
@@ -135,8 +216,10 @@ function setCategoryCookies(consent) {
   }
   if (consent.analytics) {
     setCookie('analytics_enabled', '1', 365);
+    try { localStorage.setItem('analytics_enabled', '1'); } catch (e) {}
   } else {
     setCookie('analytics_enabled', '', -1);
+    try { localStorage.removeItem('analytics_enabled'); } catch (e) {}
   }
 }
 
@@ -177,17 +260,14 @@ function showCookieBanner() {
     <div class="cookie-actions">
       <button type="button" class="btn btn-primary" id="cookie-accept">Accetta tutto</button>
       <button type="button" class="btn btn-outline" id="cookie-reject">Rifiuta</button>
+      <button type="button" class="btn btn-outline" id="cookie-export">Esporta consenso</button>
+      <button type="button" class="btn btn-outline" id="cookie-reset">Reset consenso</button>
     </div>
-    <div class="cookie-preferences" hidden>
+  <div class="cookie-preferences" hidden>
       <p class="cookie-pref-title">Categorie opzionali</p>
-      <label>
-        <input type="checkbox" data-category="functional">
-        <span>Cookie funzionali (ricordano tema e impostazioni, abilitano contenuti avanzati).</span>
-      </label>
-      <label>
-        <input type="checkbox" data-category="analytics">
-        <span>Cookie statistici anonimi per migliorare il servizio.</span>
-      </label>
+      <div class="services-list">
+        <!-- Services will be populated via JavaScript -->
+      </div>
       <div class="cookie-pref-actions">
         <button type="button" class="btn btn-primary" id="cookie-save">Salva preferenze</button>
       </div>
@@ -197,10 +277,30 @@ function showCookieBanner() {
   document.body.appendChild(banner);
 
   const prefPanel = card.querySelector('.cookie-preferences');
-  const prefInputs = card.querySelectorAll('input[data-category]');
-  prefInputs.forEach(input => {
-    const cat = input.getAttribute('data-category');
-    input.checked = !!existing[cat];
+  // populate services
+  const servicesListEl = card.querySelector('.services-list');
+  servicesMeta.forEach(s => {
+    const div = document.createElement('div');
+    div.className = 'service';
+    const info = document.createElement('div');
+    info.className = 'service-info';
+    info.innerHTML = `<strong>${s.name}</strong><p>${s.desc}</p>`;
+    const action = document.createElement('div');
+    action.className = 'service-action';
+    if (s.category === 'necessary') {
+      action.innerHTML = `<span class="pill on">Obbligatorio</span>`;
+    } else {
+      const input = document.createElement('input');
+      input.type = 'checkbox';
+      input.setAttribute('data-service', s.id);
+      // initialize state from existing service cookie or category default
+      const servicePref = getServicePreference(s.id, !!existing[s.category]);
+      input.checked = !!servicePref;
+      action.appendChild(input);
+    }
+    div.appendChild(info);
+    div.appendChild(action);
+    servicesListEl.appendChild(div);
   });
 
   const toggleBtn = banner.querySelector('.cookie-preferences-toggle');
@@ -215,25 +315,70 @@ function showCookieBanner() {
   });
 
   card.querySelector('#cookie-accept').addEventListener('click', () => {
+    // check all non-necessary services
+    card.querySelectorAll('input[data-service]').forEach(i => i.checked = true);
+    const services = collectServiceSelections(card);
     saveConsent({ necessary: true, functional: true, analytics: true });
+    setServiceCookiesFromSelections(services);
     removeCookieBanner();
     runPostConsent();
   });
 
   card.querySelector('#cookie-reject').addEventListener('click', () => {
+    // uncheck all optional services
+    card.querySelectorAll('input[data-service]').forEach(i => i.checked = false);
+    const services = collectServiceSelections(card);
     saveConsent({ necessary: true, functional: false, analytics: false });
+    setServiceCookiesFromSelections(services);
     removeCookieBanner();
     runPostConsent();
   });
 
   card.querySelector('#cookie-save').addEventListener('click', () => {
+    const services = collectServiceSelections(card);
     const selections = { necessary: true };
-    prefInputs.forEach(input => {
-      selections[input.getAttribute('data-category')] = input.checked;
-    });
+    // derive categories based on selected services
+    selections.functional = servicesMeta.some(s => s.category === 'functional' && services[s.id]);
+    selections.analytics = servicesMeta.some(s => s.category === 'analytics' && services[s.id]);
     saveConsent(selections);
+    setServiceCookiesFromSelections(services);
     removeCookieBanner();
     runPostConsent();
+  });
+
+  // export and reset
+  card.querySelector('#cookie-export').addEventListener('click', () => {
+    downloadConsent();
+  });
+  card.querySelector('#cookie-reset').addEventListener('click', () => {
+    resetConsent();
+  });
+}
+
+function collectServiceSelections(card) {
+  const result = {};
+  card.querySelectorAll('input[data-service]').forEach(i => {
+    result[i.getAttribute('data-service')] = !!i.checked;
+  });
+  return result;
+}
+
+function getServicePreference(id, defaultValue) {
+  const cookieName = 'service_' + id;
+  const c = getCookie(cookieName);
+  if (c !== null) return c === '1';
+  try {
+    const ls = localStorage.getItem(cookieName);
+    if (ls !== null) return ls === '1';
+  } catch (e) {}
+  return !!defaultValue;
+}
+
+function setServiceCookiesFromSelections(selections) {
+  Object.keys(selections).forEach(id => {
+    const cookieName = 'service_' + id;
+    setCookie(cookieName, selections[id] ? '1' : '0', 365);
+    try { localStorage.setItem(cookieName, selections[id] ? '1' : '0'); } catch (e) {}
   });
 }
 
@@ -253,6 +398,42 @@ function handleConsentEffects() {
 
 function runPostConsent() {
   handleConsentEffects();
+  // remove or deactivate services the user has not consented to
+  removeUnconsentedServices(getConsent() || {});
+  // initialize analytics if consent granted
+  if (hasConsent('analytics')) loadAnalytics();
+  // ensure the map is present if functional consent
+  if (hasConsent('functional')) loadGoogleMapNow();
+}
+
+function loadAnalytics() {
+  if (document.getElementById('ga-script')) return; // already loaded
+  // Example stub for Google Analytics (gtag)
+  const script = document.createElement('script');
+  script.id = 'ga-script';
+  script.async = true;
+  script.src = 'https://www.googletagmanager.com/gtag/js?id=UA-000000-0';
+  script.onload = () => {
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-000000-0');
+  };
+  document.head.appendChild(script);
+}
+
+function removeUnconsentedServices(consent) {
+  // Remove cookies and localStorage entries for services that are not consented
+  Object.keys(consent).forEach(k => {
+    // skip necessary
+  });
+  // remove analytics script if not consented
+  if (!consent.analytics) {
+    const ga = document.getElementById('ga-script');
+    if (ga) ga.remove();
+    // clear analytics cookies
+    try { setCookie('_ga', '', -1); setCookie('_gid', '', -1); } catch (e) {}
+  }
 }
 
 onReady(() => {
@@ -431,3 +612,45 @@ async function loadInstagramFeed() {
   }
 }
 onReady(loadInstagramFeed);
+
+// Cookie scanner: scans document.cookie for visible cookies and categorizes them
+function scanCookies() {
+  const resultsEl = document.getElementById('cookie-scan-results');
+  if (!resultsEl) return;
+  const raw = document.cookie || '';
+  if (!raw) {
+    resultsEl.innerHTML = '<p>Nessun cookie rilevabile via JavaScript (OK per conformità iniziale).</p>';
+    return;
+  }
+  const pairs = raw.split('; ').map(s => s.split('='));
+  const cookies = pairs.map(p => ({ name: p[0], value: decodeURIComponent(p[1] || '') }));
+
+  // Simple heuristics mapping for known cookie names -> categories
+  const mapping = {
+    'session': 'necessary',
+    'PHPSESSID': 'necessary',
+    'cookie_consent': 'necessary',
+    'consent_functional': 'functional',
+    'consent_analytics': 'analytics',
+    'analytics_enabled': 'analytics',
+    '_ga': 'analytics',
+    '_gid': 'analytics',
+    '_gat': 'analytics',
+    'collect': 'analytics',
+  };
+
+  const list = document.createElement('ul');
+  cookies.forEach(c => {
+    const li = document.createElement('li');
+    const cat = mapping[c.name] || 'unknown';
+    li.textContent = `${c.name}: ${c.value} — categoria: ${cat}`;
+    list.appendChild(li);
+  });
+  resultsEl.innerHTML = '';
+  resultsEl.appendChild(list);
+}
+
+onReady(() => {
+  const scanBtn = document.getElementById('scan-cookies');
+  if (scanBtn) scanBtn.addEventListener('click', scanCookies);
+});
