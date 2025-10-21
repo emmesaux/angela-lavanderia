@@ -144,58 +144,7 @@ function saveConsent(consent) {
   handleConsentEffects();
 }
 
-function generateConsentId() {
-  // simple random id
-  return 'c-' + Math.random().toString(36).slice(2, 12) + '-' + Date.now().toString(36);
-}
-
-function downloadConsent() {
-  const consent = getConsent() || {};
-  const id = getCookie('cookie_consent_id') || localStorage.getItem('cookie_consent_id') || generateConsentId();
-  const ts = getCookie('cookie_consent_ts') || localStorage.getItem('cookie_consent_ts') || new Date().toISOString();
-  const meta = { id, ts, domain: location.hostname };
-  const services = {};
-  servicesMeta.forEach(s => { services[s.id] = getServicePreference(s.id, false); });
-  const payload = { meta, consent, services, ua: navigator.userAgent };
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `consent-${id}.json`;
-  document.body.appendChild(a);
-  a.click();
-  URL.revokeObjectURL(url);
-  a.remove();
-}
-
-function resetConsent() {
-  // Clear consent and service cookies/localStorage then show banner
-  setCookie('cookie_consent', '', -1);
-  setCookie('cookie_consent_id', '', -1);
-  setCookie('cookie_consent_ts', '', -1);
-  deleteCategoryCookies();
-  try { localStorage.removeItem('cookie_consent'); localStorage.removeItem('cookie_consent_id'); localStorage.removeItem('cookie_consent_ts'); } catch (e) {}
-  removeCookieBanner();
-  showCookieBanner();
-}
-
-function loadGoogleMapNow() {
-  const wrapper = document.getElementById('map-wrapper');
-  if (!wrapper) return;
-  const mapSrc = wrapper.getAttribute('data-map-src');
-  if (!mapSrc) return;
-  if (wrapper.querySelector('iframe')) return; // already loaded
-  const iframe = document.createElement('iframe');
-  iframe.src = mapSrc;
-  iframe.width = '600';
-  iframe.height = '450';
-  iframe.style.border = '0';
-  iframe.loading = 'lazy';
-  iframe.setAttribute('allowfullscreen', '');
-  iframe.setAttribute('referrerpolicy', 'no-referrer-when-downgrade');
-  wrapper.innerHTML = '';
-  wrapper.appendChild(iframe);
-}
+ 
 function deleteCategoryCookies() {
   setCookie('consent_functional', '', -1);
   setCookie('consent_analytics', '', -1);
@@ -253,15 +202,13 @@ function showCookieBanner() {
       <span>I cookie necessari sono sempre attivi. Seleziona le categorie opzionali che desideri abilitare.</span>
       <div class="cookie-links">
         <a href="/privacy.html" class="cookie-link">Privacy</a>
-        <button type="button" class="cookie-preferences-toggle">Preferenze</button>
         <a href="/cookie.html" class="cookie-link">Cookie Policy</a>
       </div>
     </div>
     <div class="cookie-actions">
       <button type="button" class="btn btn-primary" id="cookie-accept">Accetta tutto</button>
       <button type="button" class="btn btn-outline" id="cookie-reject">Rifiuta</button>
-      <button type="button" class="btn btn-outline" id="cookie-export">Esporta consenso</button>
-      <button type="button" class="btn btn-outline" id="cookie-reset">Reset consenso</button>
+      
     </div>
   <div class="cookie-preferences" hidden>
       <p class="cookie-pref-title">Categorie opzionali</p>
@@ -346,13 +293,7 @@ function showCookieBanner() {
     runPostConsent();
   });
 
-  // export and reset
-  card.querySelector('#cookie-export').addEventListener('click', () => {
-    downloadConsent();
-  });
-  card.querySelector('#cookie-reset').addEventListener('click', () => {
-    resetConsent();
-  });
+  
 }
 
 function collectServiceSelections(card) {
@@ -402,8 +343,7 @@ function runPostConsent() {
   removeUnconsentedServices(getConsent() || {});
   // initialize analytics if consent granted
   if (hasConsent('analytics')) loadAnalytics();
-  // ensure the map is present if functional consent
-  if (hasConsent('functional')) loadGoogleMapNow();
+  // Map is embedded in HTML; no action needed for functional consent
 }
 
 function loadAnalytics() {
@@ -601,54 +541,49 @@ async function loadInstagramFeed() {
     console.error('Instagram feed error:', err);
     el.innerHTML = `
       <div style="grid-column: 1 / -1; text-align: center; padding: 2rem;">
-        <p style="margin-bottom: 1rem; color: #666;">
-          Segui i nostri ultimi post su Instagram!
-        </p>
-        <a href="https://www.instagram.com/lavanderia_angela_/" target="_blank" class="btn btn-primary">
-          Visita il nostro profilo
-        </a>
+        <p style="margin-bottom: 1rem; color: #666;">Segui i nostri ultimi post su Instagram!</p>
+        <a href="https://www.instagram.com/lavanderia_angela_/" target="_blank" class="btn btn-primary">Visita il nostro profilo</a>
       </div>
     `;
   }
 }
-onReady(loadInstagramFeed);
 
 // Cookie scanner: scans document.cookie for visible cookies and categorizes them
-function scanCookies() {
-  const resultsEl = document.getElementById('cookie-scan-results');
-  if (!resultsEl) return;
-  const raw = document.cookie || '';
-  if (!raw) {
-    resultsEl.innerHTML = '<p>Nessun cookie rilevabile via JavaScript (OK per conformità iniziale).</p>';
-    return;
+  function scanCookies() {
+    const resultsEl = document.getElementById('cookie-scan-results');
+    if (!resultsEl) return;
+    const raw = document.cookie || '';
+    if (!raw) {
+      resultsEl.innerHTML = '<p>Nessun cookie rilevabile via JavaScript (OK per conformità iniziale).</p>';
+      return;
+    }
+    const pairs = raw.split('; ').map(s => s.split('='));
+    const cookies = pairs.map(p => ({ name: p[0], value: decodeURIComponent(p[1] || '') }));
+
+    // Simple heuristics mapping for known cookie names -> categories
+    const mapping = {
+      session: 'necessary',
+      PHPSESSID: 'necessary',
+      cookie_consent: 'necessary',
+      consent_functional: 'functional',
+      consent_analytics: 'analytics',
+      analytics_enabled: 'analytics',
+      _ga: 'analytics',
+      _gid: 'analytics',
+      _gat: 'analytics',
+      collect: 'analytics'
+    };
+
+    const list = document.createElement('ul');
+    cookies.forEach(c => {
+      const li = document.createElement('li');
+      const cat = mapping[c.name] || 'unknown';
+      li.textContent = `${c.name}: ${c.value} - categoria: ${cat}`;
+      list.appendChild(li);
+    });
+    resultsEl.innerHTML = '';
+    resultsEl.appendChild(list);
   }
-  const pairs = raw.split('; ').map(s => s.split('='));
-  const cookies = pairs.map(p => ({ name: p[0], value: decodeURIComponent(p[1] || '') }));
-
-  // Simple heuristics mapping for known cookie names -> categories
-  const mapping = {
-    'session': 'necessary',
-    'PHPSESSID': 'necessary',
-    'cookie_consent': 'necessary',
-    'consent_functional': 'functional',
-    'consent_analytics': 'analytics',
-    'analytics_enabled': 'analytics',
-    '_ga': 'analytics',
-    '_gid': 'analytics',
-    '_gat': 'analytics',
-    'collect': 'analytics',
-  };
-
-  const list = document.createElement('ul');
-  cookies.forEach(c => {
-    const li = document.createElement('li');
-    const cat = mapping[c.name] || 'unknown';
-    li.textContent = `${c.name}: ${c.value} — categoria: ${cat}`;
-    list.appendChild(li);
-  });
-  resultsEl.innerHTML = '';
-  resultsEl.appendChild(list);
-}
 
 onReady(() => {
   const scanBtn = document.getElementById('scan-cookies');

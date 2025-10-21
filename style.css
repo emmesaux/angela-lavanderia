@@ -625,23 +625,19 @@ footer i {
 .cookie-banner {
     position: fixed;
     bottom: 18px;
-    left: 18px;
     right: 18px;
     z-index: 2000;
-    display: flex;
-    justify-content: center;
 }
 .cookie-banner .cookie-card {
-    width: 100%;
-    max-width: 1100px;
+    width: 360px;
     background: var(--card-bg);
     color: var(--text-light);
-    padding: 1rem 1.2rem;
+    padding: 1rem;
     border-radius: 12px;
-    box-shadow: 0 14px 40px rgba(0,0,0,0.12);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.16);
     display: flex;
-    gap: 1rem;
-    align-items: center;
+    flex-direction: column;
+    gap: 0.8rem;
 }
 .cookie-banner .cookie-message {
     flex: 1 1 auto;
@@ -654,6 +650,7 @@ footer i {
     display: flex;
     gap: 0.6rem;
     align-items: center;
+    justify-content: flex-end;
 }
 .cookie-banner .cookie-links {
     display: flex;
@@ -712,7 +709,5 @@ footer i {
 
 @media (max-width: 680px) {
     .cookie-banner { left: 10px; right: 10px; bottom: 12px; }
-    .cookie-banner .cookie-card { flex-direction: column; align-items: stretch; }
-    .cookie-banner .cookie-actions { justify-content: flex-end; }
-    .cookie-banner .cookie-links { flex-direction: column; align-items: flex-start; }
+    .cookie-banner .cookie-card { width: auto; }
 }
