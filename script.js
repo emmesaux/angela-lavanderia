@@ -81,7 +81,7 @@ onReady(() => {
 /* ----------------------------------------------------------------- */
 /* Cookie consent banner (GDPR) con preferenze                        */
 /* ----------------------------------------------------------------- */
-const defaultConsent = { necessary: true, functional: false, analytics: false };
+const defaultConsent = { necessary: true, functional: false, analytics: false, marketing: false };
 
 // Known services for cookie management
 const servicesMeta = [
@@ -133,9 +133,21 @@ function getConsent() {
   return null;
 }
 
+function isConsentConfirmedAndTimestamped() {
+  let confirmed = getCookie('cookie_consent_confirmed');
+  let ts = getCookie('cookie_consent_ts');
+  try { if (!confirmed) confirmed = localStorage.getItem('cookie_consent_confirmed'); } catch (e) {}
+  try { if (!ts) ts = localStorage.getItem('cookie_consent_ts'); } catch (e) {}
+  return !!confirmed && !!ts;
+}
+
 function saveConsent(consent) {
-  const normalized = { ...defaultConsent, ...consent };
+  const ts = new Date().toISOString();
+  const normalized = { ...defaultConsent, ...consent, ts };
   setCookie('cookie_consent', encodeURIComponent(JSON.stringify(normalized)), 365);
+  // mark consent as confirmed (prevents accidental hiding on reload)
+  try { setCookie('cookie_consent_confirmed', '1', 365); localStorage.setItem('cookie_consent_confirmed', '1'); } catch (e) {}
+  try { setCookie('cookie_consent_ts', ts, 365); localStorage.setItem('cookie_consent_ts', ts); } catch (e) {}
   setCategoryCookies(normalized);
   // Also persist in localStorage as fallback when cookies cannot be set
   try { localStorage.setItem('cookie_consent', JSON.stringify(normalized)); } catch (e) {}
@@ -156,6 +168,7 @@ function deleteCategoryCookies() {
 function setCategoryCookies(consent) {
   setCookie('consent_functional', consent.functional ? '1' : '0', 365);
   setCookie('consent_analytics', consent.analytics ? '1' : '0', 365);
+  setCookie('consent_marketing', consent.marketing ? '1' : '0', 365);
   console.debug('Category cookies set: functional=', consent.functional, 'analytics=', consent.analytics);
   try { localStorage.setItem('consent_functional', consent.functional ? '1' : '0'); localStorage.setItem('consent_analytics', consent.analytics ? '1' : '0'); } catch (e) {}
   if (consent.functional) {
@@ -170,6 +183,11 @@ function setCategoryCookies(consent) {
     setCookie('analytics_enabled', '', -1);
     try { localStorage.removeItem('analytics_enabled'); } catch (e) {}
   }
+  if (!consent.marketing) {
+    try { setCookie('marketing_enabled', '', -1); localStorage.removeItem('marketing_enabled'); } catch (e) {}
+  } else {
+    try { setCookie('marketing_enabled', '1', 365); localStorage.setItem('marketing_enabled', '1'); } catch (e) {}
+  }
 }
 
 function hasConsent(category) {
@@ -180,15 +198,54 @@ function hasConsent(category) {
 
 function removeCookieBanner() {
   const banner = document.querySelector('.cookie-banner');
-  if (banner) banner.remove();
+  if (!banner) return;
+    // only remove banner if consent has been set (cookie or localStorage)
+  const consentCookie = getCookie('cookie_consent');
+  let consentStored = false;
+  if (consentCookie) consentStored = true;
+  try { if (!consentStored && localStorage.getItem('cookie_consent')) consentStored = true; } catch (e) {}
+  if (!consentStored) {
+    // don't remove the banner unless the user set consent
+    return;
+  }
+  // ensure consent was explicitly confirmed with timestamp
+  let confirmed = getCookie('cookie_consent_confirmed');
+  let ts = getCookie('cookie_consent_ts');
+  try { if (!confirmed) confirmed = localStorage.getItem('cookie_consent_confirmed'); } catch (e) {}
+  try { if (!ts) ts = localStorage.getItem('cookie_consent_ts'); } catch (e) {}
+  if (!confirmed || !ts) return;
+  // do not remove the banner if it's currently forced open (user hasn't completed a choice)
+  if (banner.dataset.forced === '1') return;
+  // Avoid removing immediately after showing (guard against accidental close)
+  const shownAt = banner.dataset.shownAt ? parseInt(banner.dataset.shownAt, 10) : 0;
+  const elapsed = Date.now() - shownAt;
+  const minVisible = 1200; // ms
+  if (elapsed < minVisible) {
+    setTimeout(removeCookieBanner, Math.max(50, minVisible - elapsed));
+    return;
+  }
+  const card = banner.querySelector('.cookie-card');
+  if (card) {
+    card.style.transform = 'translateY(110%)';
+    card.style.opacity = '0';
+    setTimeout(() => { try { banner.remove(); } catch (e) {} }, 380);
+  } else {
+    try { banner.remove(); } catch (e) {}
+  }
 }
 
-function showCookieBanner() {
-  const existing = getConsent() || { ...defaultConsent };
-  if (existing && existing.necessary && (existing.functional || existing.analytics)) {
+function showCookieBanner(force = false) {
+  const consentValue = getConsent();
+  // Check whether consent was previously confirmed (some older states may have cookie_consent without confirmation)
+  let confirmed = getCookie('cookie_consent_confirmed');
+  try { if (!confirmed) confirmed = localStorage.getItem('cookie_consent_confirmed'); } catch (e) {}
+  // If consent already exists and was explicitly confirmed (and we're not forcing), apply and don't show banner
+  if (consentValue && !force && confirmed) {
     runPostConsent();
     return;
   }
+  // Use persisted consent as initial UI state when available
+  const existing = consentValue ? { ...defaultConsent, ...consentValue } : { ...defaultConsent };
 
   const banner = document.createElement('div');
   banner.className = 'cookie-banner';
@@ -196,20 +253,30 @@ function showCookieBanner() {
   card.className = 'cookie-card';
   banner.setAttribute('role', 'dialog');
   banner.setAttribute('aria-live', 'polite');
+  banner.setAttribute('aria-modal', 'true');
   card.innerHTML = `
     <div class="cookie-message">
-      <strong>Preferenze cookie</strong>
-      <span>I cookie necessari sono sempre attivi. Seleziona le categorie opzionali che desideri abilitare.</span>
-      <div class="cookie-links">
-        <a href="/privacy.html" class="cookie-link">Privacy</a>
-        <a href="/cookie.html" class="cookie-link">Cookie Policy</a>
+      <div class="cookie-logo"><img src="images/logo.png" alt="Angela Lavanderia"></div>
+      <div class="cookie-text">
+        <strong>Preferenze cookie</strong>
+        <div class="cookie-desc">Usiamo i cookie per personalizzare i contenuti e analizzare il traffico. Scegli quali abilitare.</div>
+        <div class="cookie-links">
+          <a href="privacy.html" class="cookie-link">Privacy</a>
+          <a href="cookie.html" class="cookie-link">Cookie Policy</a>
+        </div>
       </div>
     </div>
-    <div class="cookie-actions">
-      <button type="button" class="btn btn-outline" id="cookie-reject">Rifiuta</button>
-      <button type="button" class="btn btn-primary" id="cookie-accept">Accetta tutto</button>
-      <button type="button" class="btn" id="cookie-preferences-toggle" title="Mostra preferenze">Preferenze</button>
+      <div class="cookie-categories-compact">
+      <label>Necessari <input type="checkbox" data-category="necessary" disabled checked></label>
+      <label>Funzionali <input type="checkbox" data-category="functional"></label>
+      <label>Statistiche <input type="checkbox" data-category="analytics"></label>
+      <label>Marketing <input type="checkbox" data-category="marketing"></label>
+      <a href="#" class="cookie-details">Mostra dettagli</a>
     </div>
+      <div class="cookie-actions">
+        <button type="button" class="btn btn-primary" id="cookie-accept">Consenti tutti</button>
+        <button type="button" class="btn btn-ghost" id="cookie-reject">Rifiuta</button>
+      </div>
   `;
 
   // Preferences panel (will be shown below the card if toggled)
@@ -218,14 +285,31 @@ function showCookieBanner() {
   prefPanelEl.hidden = true;
   prefPanelEl.innerHTML = `
     <p class="cookie-pref-title">Categorie opzionali</p>
+    <div class="categories-row">
+      <label>Necessari <input type="checkbox" data-category="necessary" disabled checked></label>
+      <label>Funzionali <input type="checkbox" data-category="functional"></label>
+      <label>Statistiche <input type="checkbox" data-category="analytics"></label>
+      <label>Marketing <input type="checkbox" data-category="marketing"></label>
+    </div>
     <div class="services-list"></div>
     <div class="cookie-pref-actions">
       <button type="button" class="btn btn-primary" id="cookie-save">Salva preferenze</button>
     </div>
   `;
-  card.appendChild(prefPanelEl);
   banner.appendChild(card);
+  banner.appendChild(prefPanelEl);
   document.body.appendChild(banner);
+  // record shown timestamp for minimum-visible guard
+  try { banner.dataset.shownAt = String(Date.now()); } catch (e) {}
+  banner.dataset.forced = '1';
+  // entrance animation (slide from bottom)
+  card.style.transform = 'translateY(110%)';
+  card.style.opacity = '0';
+  requestAnimationFrame(() => {
+    card.style.transition = 'transform 320ms cubic-bezier(.2,.8,.2,1), opacity 320ms ease-out';
+    card.style.transform = 'translateY(0)';
+    card.style.opacity = '1';
+  });
 
   const prefPanel = prefPanelEl;
   // populate services
@@ -267,23 +351,46 @@ function showCookieBanner() {
     servicesListEl.appendChild(div);
   });
 
-  const toggleBtn = banner.querySelector('#cookie-preferences-toggle');
-    toggleBtn.addEventListener('click', () => {
-      const hidden = prefPanel.hasAttribute('hidden');
-      if (hidden) {
-        prefPanel.removeAttribute('hidden');
-        prefPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      } else {
-        prefPanel.setAttribute('hidden', '');
+    // initialize the category toggles
+    const catInputs = prefPanel.querySelectorAll('.categories-row input[type="checkbox"]');
+    catInputs.forEach(ci => {
+      const cat = ci.getAttribute('data-category');
+      if (cat) {
+        ci.checked = !!existing[cat];
+        ci.addEventListener('change', () => {
+          // toggle all service checkboxes in that category
+          prefPanel.querySelectorAll(`input[data-service]`).forEach(si => {
+            const sid = si.getAttribute('data-service');
+            const serviceMeta = servicesMeta.find(sm => sm.id === sid);
+            if (serviceMeta && serviceMeta.category === cat) {
+              si.checked = ci.checked;
+            }
+          });
+        });
       }
     });
+
+  // The preferences panel is exposed via the "Mostra dettagli" link only.
+
+  // Il link 'Mostra dettagli' apre il pannello delle preferenze
+  const detailsLink = card.querySelector('.cookie-details');
+  if (detailsLink) {
+    detailsLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (prefPanel.hasAttribute('hidden')) prefPanel.removeAttribute('hidden');
+      else prefPanel.setAttribute('hidden', '');
+      prefPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+  }
 
   card.querySelector('#cookie-accept').addEventListener('click', () => {
     // check all non-necessary services
     prefPanel.querySelectorAll('input[data-service]').forEach(i => i.checked = true);
     const services = collectServiceSelections(prefPanel);
-    saveConsent({ necessary: true, functional: true, analytics: true });
+    saveConsent({ necessary: true, functional: true, analytics: true, marketing: true });
     setServiceCookiesFromSelections(services);
+    // allow removal now
+    banner.dataset.forced = '0';
     removeCookieBanner();
     runPostConsent();
   });
@@ -292,8 +399,9 @@ function showCookieBanner() {
     // uncheck all optional services
     prefPanel.querySelectorAll('input[data-service]').forEach(i => i.checked = false);
     const services = collectServiceSelections(prefPanel);
-    saveConsent({ necessary: true, functional: false, analytics: false });
+    saveConsent({ necessary: true, functional: false, analytics: false, marketing: false });
     setServiceCookiesFromSelections(services);
+    banner.dataset.forced = '0';
     removeCookieBanner();
     runPostConsent();
   });
@@ -304,11 +412,28 @@ function showCookieBanner() {
     // derive categories based on selected services
     selections.functional = servicesMeta.some(s => s.category === 'functional' && services[s.id]);
     selections.analytics = servicesMeta.some(s => s.category === 'analytics' && services[s.id]);
+    selections.marketing = servicesMeta.some(s => s.category === 'marketing' && services[s.id]);
     saveConsent(selections);
     setServiceCookiesFromSelections(services);
+    banner.dataset.forced = '0';
     removeCookieBanner();
     runPostConsent();
   });
+
+  // Keep banner visible during scroll until user makes a choice
+  const ensureVisible = () => {
+    const b = document.querySelector('.cookie-banner');
+    // remain visible until consent is explicitly confirmed with a timestamp
+    if (b && !isConsentConfirmedAndTimestamped()) {
+      b.style.display = '';
+      b.style.opacity = '1';
+      b.style.bottom = '0';
+      b.style.pointerEvents = 'auto';
+    }
+  };
+  window.addEventListener('scroll', ensureVisible);
+  window.addEventListener('resize', ensureVisible);
+  window.addEventListener('orientationchange', ensureVisible);
 
   
 }
@@ -395,7 +520,11 @@ function removeUnconsentedServices(consent) {
 
 onReady(() => {
   const consent = getConsent();
-  if (consent) {
+  let confirmed = getCookie('cookie_consent_confirmed');
+  let ts = getCookie('cookie_consent_ts');
+  try { if (!confirmed) confirmed = localStorage.getItem('cookie_consent_confirmed'); } catch (e) {}
+  try { if (!ts) ts = localStorage.getItem('cookie_consent_ts'); } catch (e) {}
+  if (consent && confirmed && ts) {
     runPostConsent();
   } else {
     showCookieBanner();
@@ -418,7 +547,8 @@ onReady(() => {
           return;
         }
       } else {
-        showCookieBanner();
+        // force true to ensure banner appears even if consent exists
+        showCookieBanner(true);
         // after banner created, open preferences panel
         setTimeout(() => {
           const b = document.querySelector('.cookie-banner');
