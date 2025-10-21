@@ -14,6 +14,8 @@ onReady(() => {
 
   hamburger.addEventListener('click', () => {
     navLinks.classList.toggle('active');
+    // animate hamburger lines (add/remove .open)
+    hamburger.classList.toggle('open');
   });
 
   const navAnchors = navLinks.querySelectorAll('a');

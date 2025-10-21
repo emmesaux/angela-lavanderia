@@ -171,6 +171,32 @@ body {
     transition: 0.3s;
 }
 
+/* Animated hamburger -> X */
+.hamburger {
+    -webkit-tap-highlight-color: transparent;
+    align-items: center;
+    justify-content: center;
+}
+
+.hamburger.open span:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+}
+.hamburger.open span:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+}
+.hamburger.open span:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+}
+
+.hamburger:focus {
+    outline: none;
+}
+.hamburger:focus span {
+    box-shadow: 0 0 0 4px rgba(234,88,12,0.12);
+    border-radius: 2px;
+}
+
 /* Hero Section */
 .hero {
     background: var(--hero-overlay), url('images/hero-bg.jpg') center/cover no-repeat;
