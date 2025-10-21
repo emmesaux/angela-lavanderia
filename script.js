@@ -756,3 +756,12 @@ onReady(() => {
   const scanBtn = document.getElementById('scan-cookies');
   if (scanBtn) scanBtn.addEventListener('click', scanCookies);
 });
+
+// Ensure Instagram feed is loaded after DOM is ready
+onReady(() => {
+  try {
+    loadInstagramFeed();
+  } catch (e) {
+    console.warn('Error calling loadInstagramFeed onReady:', e);
+  }
+});
