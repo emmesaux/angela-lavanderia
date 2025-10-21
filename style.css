@@ -611,3 +611,47 @@ footer i {
         height: 300px;
     }
 }
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    padding: 0.5rem 0.9rem;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* Cookie banner */
+.cookie-banner {
+    position: fixed;
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+    background: var(--card-bg);
+    color: var(--text-light);
+    padding: 1rem 1.2rem;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 2000;
+}
+.cookie-banner .cookie-message {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+.cookie-banner .cookie-actions {
+    display: flex;
+    gap: 0.6rem;
+}
+.cookie-banner .cookie-link {
+    color: var(--primary-color);
+    text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+    .cookie-banner { left: 10px; right: 10px; bottom: 12px; flex-direction: column; gap: 0.7rem; align-items: stretch; }
+    .cookie-banner .cookie-actions { justify-content: flex-end; }
+}

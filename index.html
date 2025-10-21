@@ -165,9 +165,14 @@
             <!-- Map Embed -->
             <div class="map-container">
                 <h2>Dove Siamo</h2>
-                <div class="map-wrapper">
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d608.8414341575573!2d14.949358474383406!3d40.618410640470096!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x133be1ef947d91d9%3A0x4ddf4a13a1ac6247!2sLAVANDERIA%20ANGELA!5e0!3m2!1sit!2sit!4v1760873069180!5m2!1sit!2sit" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-                </div>
+                <div class="map-wrapper" id="map-wrapper" data-map-src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d608.8414341575573!2d14.949358474383406!3d40.618410640470096!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x133be1ef947d91d9%3A0x4ddf4a13a1ac6247!2sLAVANDERIA%20ANGELA!5e0!3m2!1sit!2sit!4v1760873069180!5m2!1sit!2sit">
+                        <div class="map-placeholder">
+                            <p>Per visualizzare la mappa, accetta i cookie o caricala manualmente.</p>
+                            <div class="map-actions">
+                                <button id="load-map" class="btn btn-outline">Carica la mappa</button>
+                            </div>
+                        </div>
+                    </div>
             </div>
 
             <!-- Orari -->
