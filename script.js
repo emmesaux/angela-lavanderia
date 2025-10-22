@@ -578,13 +578,25 @@ onReady(() => {
   const mapIframe = document.querySelector('.map-wrapper iframe');
   const mapLoader = document.querySelector('.map-loader');
   if (mapIframe && mapLoader) {
+    let mapLoaded = false;
     mapIframe.addEventListener('load', () => {
+      mapLoaded = true;
       mapLoader.classList.add('hidden');
+      console.log('Google Maps iframe loaded');
     });
-    // Fallback: hide loader after 5 seconds if iframe doesn't fire load event
+    // Fallback: show error after 5 seconds if iframe doesn't fire load event
     setTimeout(() => {
-      if (!mapLoader.classList.contains('hidden')) {
-        mapLoader.classList.add('hidden');
+      if (!mapLoaded) {
+        const msg = document.getElementById('map-loader-msg');
+        const fallback = document.getElementById('map-fallback');
+        if (msg) msg.textContent = 'Impossibile caricare la mappa.';
+        if (fallback) fallback.style.display = 'block';
+        mapLoader.classList.remove('hidden');
+        console.warn('Google Maps iframe non caricato: possibile blocco da AdBlock, privacy, cookie o CSP.');
+      } else {
+        if (!mapLoader.classList.contains('hidden')) {
+          mapLoader.classList.add('hidden');
+        }
       }
     }, 5000);
   }
