@@ -573,6 +573,21 @@ onReady(() => {
       }
     });
   }
+
+  // Handle map loader
+  const mapIframe = document.querySelector('.map-wrapper iframe');
+  const mapLoader = document.querySelector('.map-loader');
+  if (mapIframe && mapLoader) {
+    mapIframe.addEventListener('load', () => {
+      mapLoader.classList.add('hidden');
+    });
+    // Fallback: hide loader after 5 seconds if iframe doesn't fire load event
+    setTimeout(() => {
+      if (!mapLoader.classList.contains('hidden')) {
+        mapLoader.classList.add('hidden');
+      }
+    }, 5000);
+  }
 });
 
 /* ----------------------------------------------------------------- */
