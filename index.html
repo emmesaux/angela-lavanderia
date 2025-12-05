@@ -40,9 +40,7 @@
   </script>
 
     <link rel="stylesheet" href="style.css">
-    <!-- Iubenda Privacy Controls & Cookie Solution (embed snippet) -->
-    <script type="text/javascript" src="https://embeds.iubenda.com/widgets/e88e4a7f-5f9e-4d4a-bbeb-69d943ef2e64.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="icon" href="images/logo.png" type="image/png" style="border-radius: 30%;">
 
 </head>
@@ -54,36 +52,37 @@
                 <img src="images/logo.png" alt="Angela Lavanderia" class="site-logo">
                 <span>Angela Lavanderia</span>
             </div>
-            <ul class="nav-links">
+            <ul class="nav-links" role="navigation" aria-label="Menu principale">
                 <li><a href="#home">Home</a></li>
                 <li><a href="#servizi">Servizi</a></li>
                <!-- <li><a href="#prezzi">Prezzi</a></li> -->
                 <li><a href="#contatti">Contatti</a></li>
             </ul>
             <div class="nav-actions">
-                <div class="theme-toggle" id="theme-toggle" title="Cambia tema" aria-label="Cambia tema">
+                <button type="button" class="theme-toggle" id="theme-toggle" title="Cambia tema" aria-label="Cambia tema tra chiaro e scuro">
                     <i class="fas fa-moon"></i>
-                </div>
-                <div class="hamburger">
+                </button>
+                <button type="button" class="hamburger" aria-label="Menu di navigazione" aria-expanded="false">
                     <span></span>
                     <span></span>
                     <span></span>
-                </div>
+                </button>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section id="home" class="hero">
+    <header id="home" class="hero">
         <div class="hero-content">
             <img src="images/logo.png" alt="Logo Angela Lavanderia" class="hero-logo">
             <h1>Angela Lavanderia</h1>
             <p>Servizio professionale di lavanderia con cura e attenzione per i tuoi vestiti</p>
             <a href="#contatti" class="btn btn-primary">Contattaci Ora</a>
         </div>
-    </section>
+    </header>
 
     <!-- Chi Siamo -->
+    <main>
     <section id="chi-siamo" class="chi-siamo">
         <div class="container">
             <h2>Chi Siamo</h2>
@@ -99,8 +98,8 @@
 
     <section id="instagram" class="instagram">
         <div class="container">
-            <h2 style="text-align: center;">News</h2>
-            <p class="lead" style="text-align: center;">Gli ultimi post dal nostro profilo</p>
+            <h2>News</h2>
+            <p class="lead">Gli ultimi post dal nostro profilo</p>
             <div id="insta-feed" class="insta-grid" role="list" aria-label="Feed Instagram">
                 <!-- I post verranno caricati qui -->
             </div>
@@ -175,7 +174,7 @@
                                                     <p style="color:#c00; font-size:15px;">Impossibile caricare la mappa.<br>Prova a disattivare AdBlock, accettare i cookie oppure <a href="https://maps.app.goo.gl/4niTJdkJKNBcwzYq7" target="_blank" rel="noopener" style="color:var(--primary-color);text-decoration:underline;">apri direttamente su Google Maps</a>.</p>
                                                 </div>
                     </div>
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d608.8414341575573!2d14.949358474383406!3d40.618410640470096!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x133be1ef947d91d9%3A0x4ddf4a13a1ac6247!2sLAVANDERIA%20ANGELA!5e0!3m2!1sit!2sit!4v1760873069180!5m2!1sit!2sit" width="600" height="450" style="border:0;" allowfullscreen="" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d608.8414341575573!2d14.949358474383406!3d40.618410640470096!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x133be1ef947d91d9%3A0x4ddf4a13a1ac6247!2sLAVANDERIA%20ANGELA!5e0!3m2!1sit!2sit!4v1760873069180!5m2!1sit!2sit" width="600" height="450" style="border:0;" allowfullscreen="" referrerpolicy="no-referrer-when-downgrade" title="Mappa della posizione di Angela Lavanderia in Via G. D'Annunzio 35, Bellizzi" aria-label="Mappa interattiva che mostra la posizione della lavanderia"></iframe>
                 </div>
             </div>
 
@@ -242,20 +241,19 @@
             </div>
         </div>
     </section>
+    </main>
 
     <!-- Footer -->
     <footer>
         <div class="container">
             <p>&copy; 2025 Angela Lavanderia. Tutti i diritti riservati.</p>
                         <p>
-                            <!-- Iubenda links -->
-                            <a href="https://www.iubenda.com/privacy-policy/75516412" class="iubenda-white iubenda-noiframe iubenda-embed" title="Privacy Policy">Privacy Policy</a>
-                            <a href="https://www.iubenda.com/privacy-policy/75516412/cookie-policy" class="iubenda-white iubenda-noiframe iubenda-embed" title="Cookie Policy">Cookie Policy</a>
+                            <a href="privacy.html" title="Privacy Policy">Privacy Policy</a>
+                            <span style="color: rgba(255,255,255,0.5); margin: 0 0.5rem;">|</span>
+                            <a href="cookie.html" title="Cookie Policy">Cookie Policy</a>
+                            <span style="color: rgba(255,255,255,0.5); margin: 0 0.5rem;">|</span>
+                            <a href="#" id="cookie-manage" style="color: rgba(255,255,255,0.9); text-decoration: underline;">Gestisci Cookie</a>
                         </p>
-                        <!-- Iubenda loader (single instance for the page) -->
-                        <script type="text/javascript">
-                            (function (w,d) {var loader = function () {var s = d.createElement("script"), tag = d.getElementsByTagName("script")[0]; s.src="https://cdn.iubenda.com/iubenda.js"; tag.parentNode.insertBefore(s,tag);}; if(w.addEventListener){w.addEventListener("load", loader, false);}else if(w.attachEvent){w.attachEvent("onload", loader);}else{w.onload = loader;}})(window, document);
-                        </script>
             <p>Sito realizzato dalla Technical In-Engine</p>
         </div>
     </footer>

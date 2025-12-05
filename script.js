@@ -13,9 +13,10 @@ onReady(() => {
   if (!hamburger || !navLinks) return;
 
   hamburger.addEventListener('click', () => {
-    navLinks.classList.toggle('active');
+    const isExpanded = navLinks.classList.toggle('active');
     // animate hamburger lines (add/remove .open)
     hamburger.classList.toggle('open');
+    hamburger.setAttribute('aria-expanded', isExpanded);
   });
 
   const navAnchors = navLinks.querySelectorAll('a');
@@ -83,9 +84,8 @@ onReady(() => {
 /* ----------------------------------------------------------------- */
 /* Cookie consent banner (GDPR) con preferenze                        */
 /* ----------------------------------------------------------------- */
-// Toggle to use Iubenda's solution instead of the local banner.
-// Set to `true` to prefer Iubenda (we'll keep local code for now but it won't run).
-const USE_IUBENDA = true;
+
+const COOKIE_VERSION = '3.0';
 const defaultConsent = { necessary: true, functional: false, analytics: false, marketing: false };
 
 // Known services for cookie management
@@ -148,7 +148,7 @@ function isConsentConfirmedAndTimestamped() {
 
 function saveConsent(consent) {
   const ts = new Date().toISOString();
-  const normalized = { ...defaultConsent, ...consent, ts };
+  const normalized = { ...defaultConsent, ...consent, ts, version: COOKIE_VERSION };
   setCookie('cookie_consent', encodeURIComponent(JSON.stringify(normalized)), 365);
   // mark consent as confirmed (prevents accidental hiding on reload)
   try { setCookie('cookie_consent_confirmed', '1', 365); localStorage.setItem('cookie_consent_confirmed', '1'); } catch (e) {}
@@ -240,13 +240,21 @@ function removeCookieBanner() {
 }
 
 function showCookieBanner(force = false) {
-  if (USE_IUBENDA) return; // local banner disabled because Iubenda is active
+  console.log('showCookieBanner called, force:', force);
   const consentValue = getConsent();
+  console.log('consentValue:', consentValue);
   // Check whether consent was previously confirmed (some older states may have cookie_consent without confirmation)
   let confirmed = getCookie('cookie_consent_confirmed');
   try { if (!confirmed) confirmed = localStorage.getItem('cookie_consent_confirmed'); } catch (e) {}
-  // If consent already exists and was explicitly confirmed (and we're not forcing), apply and don't show banner
-  if (consentValue && !force && confirmed) {
+  
+  // Check version
+  let storedVersion = null;
+  if (consentValue && consentValue.version) {
+      storedVersion = consentValue.version;
+  }
+
+  // If consent already exists and was explicitly confirmed AND version matches
+  if (consentValue && !force && confirmed && storedVersion === COOKIE_VERSION) {
     runPostConsent();
     return;
   }
@@ -261,28 +269,32 @@ function showCookieBanner(force = false) {
   banner.setAttribute('aria-live', 'polite');
   banner.setAttribute('aria-modal', 'true');
   card.innerHTML = `
-    <div class="cookie-message">
-      <div class="cookie-logo"><img src="images/logo.png" alt="Angela Lavanderia"></div>
-      <div class="cookie-text">
-        <strong>Preferenze cookie</strong>
-        <div class="cookie-desc">Usiamo i cookie per personalizzare i contenuti e analizzare il traffico. Scegli quali abilitare.</div>
-        <div class="cookie-links">
-          <a href="privacy.html" class="cookie-link">Privacy</a>
-          <a href="cookie.html" class="cookie-link">Cookie Policy</a>
+    <div class="cookie-content-wrapper">
+      <div class="cookie-header">
+        <div class="cookie-brand">
+            <img src="images/logo.png" alt="Angela Lavanderia" class="cookie-logo-img">
+            <h3>La tua privacy è importante</h3>
+        </div>
+        <p class="cookie-desc">
+          Utilizziamo cookie e tecnologie simili per migliorare la tua esperienza, analizzare il traffico e personalizzare i contenuti. 
+          Cliccando su "Accetta tutti", acconsenti all'uso di tutti i cookie. 
+          Puoi rifiutare o personalizzare le tue scelte in qualsiasi momento.
+        </p>
+        <div class="cookie-links-inline">
+          <a href="privacy.html" target="_blank">Privacy Policy</a>
+          <span class="separator">•</span>
+          <a href="cookie.html" target="_blank">Cookie Policy</a>
+        </div>
+      </div>
+      
+      <div class="cookie-actions-wrapper">
+        <button type="button" class="btn btn-text" id="cookie-customize">Personalizza</button>
+        <div class="cookie-buttons">
+            <button type="button" class="btn btn-secondary" id="cookie-reject">Rifiuta</button>
+            <button type="button" class="btn btn-primary" id="cookie-accept">Accetta tutti</button>
         </div>
       </div>
     </div>
-      <div class="cookie-categories-compact">
-      <label>Necessari <input type="checkbox" data-category="necessary" disabled checked></label>
-      <label>Funzionali <input type="checkbox" data-category="functional"></label>
-      <label>Statistiche <input type="checkbox" data-category="analytics"></label>
-      <label>Marketing <input type="checkbox" data-category="marketing"></label>
-      <a href="#" class="cookie-details">Mostra dettagli</a>
-    </div>
-      <div class="cookie-actions">
-        <button type="button" class="btn btn-primary" id="cookie-accept">Consenti tutti</button>
-        <button type="button" class="btn btn-ghost" id="cookie-reject">Rifiuta</button>
-      </div>
   `;
 
   // Preferences panel (will be shown below the card if toggled)
@@ -290,30 +302,74 @@ function showCookieBanner(force = false) {
   prefPanelEl.className = 'cookie-preferences';
   prefPanelEl.hidden = true;
   prefPanelEl.innerHTML = `
-    <p class="cookie-pref-title">Categorie opzionali</p>
-    <div class="categories-row">
-      <label>Necessari <input type="checkbox" data-category="necessary" disabled checked></label>
-      <label>Funzionali <input type="checkbox" data-category="functional"></label>
-      <label>Statistiche <input type="checkbox" data-category="analytics"></label>
-      <label>Marketing <input type="checkbox" data-category="marketing"></label>
+    <div class="pref-header">
+        <h4>Personalizza preferenze</h4>
+        <button type="button" class="btn-close-pref" aria-label="Chiudi">✕</button>
     </div>
+    <p class="pref-desc">Scegli quali categorie di cookie autorizzare. I cookie necessari non possono essere disabilitati.</p>
+    
+    <div class="categories-list">
+      <div class="category-item">
+        <div class="category-header">
+            <label class="switch-label">
+                <input type="checkbox" data-category="necessary" disabled checked>
+                <span class="category-name">Necessari</span>
+            </label>
+            <span class="badge-required">Sempre attivi</span>
+        </div>
+        <p class="category-desc">Indispensabili per il funzionamento del sito e la sicurezza.</p>
+      </div>
+
+      <div class="category-item">
+        <div class="category-header">
+            <label class="switch-label">
+                <input type="checkbox" data-category="functional">
+                <span class="category-name">Funzionali</span>
+            </label>
+        </div>
+        <p class="category-desc">Permettono funzionalità avanzate come mappe e preferenze di tema.</p>
+      </div>
+
+      <div class="category-item">
+        <div class="category-header">
+            <label class="switch-label">
+                <input type="checkbox" data-category="analytics">
+                <span class="category-name">Statistiche</span>
+            </label>
+        </div>
+        <p class="category-desc">Ci aiutano a capire come gli utenti interagiscono con il sito.</p>
+      </div>
+
+      <div class="category-item">
+        <div class="category-header">
+            <label class="switch-label">
+                <input type="checkbox" data-category="marketing">
+                <span class="category-name">Marketing</span>
+            </label>
+        </div>
+        <p class="category-desc">Utilizzati per mostrare contenuti pubblicitari pertinenti.</p>
+      </div>
+    </div>
+
     <div class="services-list"></div>
+    
     <div class="cookie-pref-actions">
-      <button type="button" class="btn btn-primary" id="cookie-save">Salva preferenze</button>
+      <button type="button" class="btn btn-primary full-width" id="cookie-save">Salva le mie scelte</button>
     </div>
   `;
   // place preferences panel inside the card so it displays below the main row
   card.appendChild(prefPanelEl);
   banner.appendChild(card);
   document.body.appendChild(banner);
+  console.log('Cookie banner appended to body');
   // record shown timestamp for minimum-visible guard
   try { banner.dataset.shownAt = String(Date.now()); } catch (e) {}
   banner.dataset.forced = '1';
   // entrance animation (slide from bottom)
-  card.style.transform = 'translateY(110%)';
+  card.style.transform = 'translateY(20px)';
   card.style.opacity = '0';
   requestAnimationFrame(() => {
-    card.style.transition = 'transform 320ms cubic-bezier(.2,.8,.2,1), opacity 320ms ease-out';
+    card.style.transition = 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
     card.style.transform = 'translateY(0)';
     card.style.opacity = '1';
   });
@@ -322,36 +378,46 @@ function showCookieBanner(force = false) {
   // populate services
   const servicesListEl = prefPanelEl.querySelector('.services-list');
   servicesMeta.forEach(s => {
+    // ... (keep existing service population logic but maybe style it better if needed, 
+    // for now the CSS will handle it)
+    // I will simplify the service generation to match the new style if needed, 
+    // but let's keep the logic and just ensure CSS targets it correctly.
+    // Actually, let's just keep the logic as is, but I need to make sure the CSS for .service is good.
     const div = document.createElement('div');
-    div.className = 'service';
+    div.className = 'service-item'; // Changed class name for better CSS targeting
+    // ...
     const info = document.createElement('div');
     info.className = 'service-info';
     info.innerHTML = `<strong>${s.name}</strong><p>${s.desc}</p>`;
     const action = document.createElement('div');
     action.className = 'service-action';
+    
     if (s.category === 'necessary') {
-      // show a non-removable checked box and label for necessary cookies
-      const lbl = document.createElement('label');
-      lbl.className = 'mandatory';
-      const chk = document.createElement('input');
-      chk.type = 'checkbox';
-      chk.checked = true;
-      chk.disabled = true;
-      chk.setAttribute('aria-label', 'Obbligatorio');
-      const txt = document.createElement('span');
-      txt.className = 'mandatory-text';
-      txt.textContent = 'Obbligatorio';
-      lbl.appendChild(chk);
-      lbl.appendChild(txt);
-      action.appendChild(lbl);
+       // ...
+       const lbl = document.createElement('label');
+       lbl.className = 'switch-mini';
+       const chk = document.createElement('input');
+       chk.type = 'checkbox';
+       chk.checked = true;
+       chk.disabled = true;
+       const slider = document.createElement('span');
+       slider.className = 'slider round disabled';
+       lbl.appendChild(chk);
+       lbl.appendChild(slider);
+       action.appendChild(lbl);
     } else {
-      const input = document.createElement('input');
-      input.type = 'checkbox';
-      input.setAttribute('data-service', s.id);
-      // initialize state from existing service cookie or category default
-      const servicePref = getServicePreference(s.id, !!existing[s.category]);
-      input.checked = !!servicePref;
-      action.appendChild(input);
+       const lbl = document.createElement('label');
+       lbl.className = 'switch-mini';
+       const input = document.createElement('input');
+       input.type = 'checkbox';
+       input.setAttribute('data-service', s.id);
+       const servicePref = getServicePreference(s.id, !!existing[s.category]);
+       input.checked = !!servicePref;
+       const slider = document.createElement('span');
+       slider.className = 'slider round';
+       lbl.appendChild(input);
+       lbl.appendChild(slider);
+       action.appendChild(lbl);
     }
     div.appendChild(info);
     div.appendChild(action);
@@ -359,7 +425,7 @@ function showCookieBanner(force = false) {
   });
 
     // initialize the category toggles
-    const catInputs = prefPanel.querySelectorAll('.categories-row input[type="checkbox"]');
+    const catInputs = prefPanel.querySelectorAll('.category-item input[type="checkbox"]');
     catInputs.forEach(ci => {
       const cat = ci.getAttribute('data-category');
       if (cat) {
@@ -377,17 +443,27 @@ function showCookieBanner(force = false) {
       }
     });
 
-  // The preferences panel is exposed via the "Mostra dettagli" link only.
-
-  // Il link 'Mostra dettagli' apre il pannello delle preferenze
-  const detailsLink = card.querySelector('.cookie-details');
-  if (detailsLink) {
-    detailsLink.addEventListener('click', (e) => {
+  // Event listeners for the new buttons
+  const customizeBtn = card.querySelector('#cookie-customize');
+  if (customizeBtn) {
+    customizeBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      if (prefPanel.hasAttribute('hidden')) prefPanel.removeAttribute('hidden');
-      else prefPanel.setAttribute('hidden', '');
-      prefPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      prefPanel.hidden = false;
+      card.classList.add('expanded');
+      // Hide the main content wrapper when preferences are open? 
+      // Or just show preferences on top/below?
+      // Let's hide the main content for a cleaner "modal" feel within the banner
+      card.querySelector('.cookie-content-wrapper').style.display = 'none';
     });
+  }
+  
+  const closePrefBtn = card.querySelector('.btn-close-pref');
+  if (closePrefBtn) {
+      closePrefBtn.addEventListener('click', () => {
+          prefPanel.hidden = true;
+          card.classList.remove('expanded');
+          card.querySelector('.cookie-content-wrapper').style.display = 'block';
+      });
   }
 
   card.querySelector('#cookie-accept').addEventListener('click', () => {
@@ -531,31 +607,39 @@ onReady(() => {
   let ts = getCookie('cookie_consent_ts');
   try { if (!confirmed) confirmed = localStorage.getItem('cookie_consent_confirmed'); } catch (e) {}
   try { if (!ts) ts = localStorage.getItem('cookie_consent_ts'); } catch (e) {}
-  if (consent && confirmed && ts) {
+  
+  // Check version
+  let storedVersion = null;
+  if (consent && consent.version) {
+      storedVersion = consent.version;
+  }
+  
+  // Only skip showing if consent exists, confirmed, timestamped AND version matches
+  if (consent && confirmed && ts && storedVersion === COOKIE_VERSION) {
     runPostConsent();
   } else {
-    // Show local banner only when explicitly forced (default is to use Iubenda)
+    // Show local banner
     showCookieBanner();
   }
   const manageLink = document.getElementById('cookie-manage');
   if (manageLink) {
     manageLink.addEventListener('click', (e) => {
       e.preventDefault();
-      if (typeof window.iub !== 'undefined' && window.iub && window.iub.cs) {
-        // Open iubenda cookie preferences panel if available
-        try { window.iub.cs.open(); } catch (e) { console.warn('Unable to open Iubenda CS panel', e); }
-        return;
-      }
-      // Fallback: toggle our local banner if Iubenda is not available
+      // Toggle our local banner
       const banner = document.querySelector('.cookie-banner');
       if (banner) {
         const pref = banner.querySelector('.cookie-preferences');
         if (pref) {
           if (pref.hasAttribute('hidden')) {
             pref.removeAttribute('hidden');
-            pref.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            // Ensure banner is visible if it was hidden
+            banner.style.display = 'flex';
+            const card = banner.querySelector('.cookie-card');
+            card.classList.add('expanded');
+            card.querySelector('.cookie-content-wrapper').style.display = 'none';
           } else {
-            pref.setAttribute('hidden', '');
+            // If already open, maybe close it? Or just focus it.
+            // Let's just ensure it's visible.
           }
           return;
         }
@@ -567,7 +651,12 @@ onReady(() => {
           const b = document.querySelector('.cookie-banner');
           if (b) {
             const p = b.querySelector('.cookie-preferences');
-            if (p) { p.removeAttribute('hidden'); }
+            if (p) { 
+                p.removeAttribute('hidden'); 
+                const card = b.querySelector('.cookie-card');
+                card.classList.add('expanded');
+                card.querySelector('.cookie-content-wrapper').style.display = 'none';
+            }
           }
         }, 50);
       }
