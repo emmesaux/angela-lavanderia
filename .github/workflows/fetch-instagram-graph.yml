@@ -28,7 +28,7 @@ jobs:
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
         run: |
           set -eux
-          echo "Checking token owner (me):"
+          echo "Checking token owner:"
           curl -s "https://graph.facebook.com/v24.0/me?access_token=${IG_ACCESS_TOKEN}" | jq .
 
       - name: Fetch Instagram media via Graph API
@@ -43,7 +43,7 @@ jobs:
 
           URL="https://graph.facebook.com/v24.0/${IG_USER_ID}/media?fields=id,caption,media_type,media_url,thumbnail_url,permalink,timestamp,children{media_url,thumbnail_url,media_type}&limit=6&access_token=${IG_ACCESS_TOKEN}"
 
-          # GET request (supportata da Meta) + status HTTP finale
+          # GET reale (NO -I)
           http_code=$(curl -sS -L -w "%{http_code}" -o data/instagram-raw.json "$URL" | tail -n1)
 
           if [ "$http_code" != "200" ]; then
@@ -53,10 +53,9 @@ jobs:
             exit 1
           fi
 
-          echo "Instagram posts fetched:"
+          echo "Posts fetched:"
           jq '.data | length' data/instagram-raw.json
 
-          # Trasforma i dati nel JSON usato dal sito
           jq '{
             items: .data
             | map({
@@ -82,4 +81,4 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/instagram.json
           git commit -m "Update Instagram feed" || echo "No changes to commit"
-          git push --force-with-lease origin main 
+          git push
