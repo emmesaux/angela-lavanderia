@@ -834,6 +834,10 @@ async function loadInstagramFeed() {
 }
 
 // Cookie scanner: scans document.cookie for visible cookies and categorizes them
+onReady(function() {
+  loadInstagramFeed();
+});
+
   function scanCookies() {
     const resultsEl = document.getElementById('cookie-scan-results');
     if (!resultsEl) return;
