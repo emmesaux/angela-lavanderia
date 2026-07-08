@@ -5,62 +5,114 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cookie Policy - Angela Lavanderia</title>
   <meta name="description" content="Informativa sui cookie del sito Angela Lavanderia.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://angelalavanderia.it/cookie.html">
   <link rel="stylesheet" href="style.css">
-  <link rel="canonical" href="/cookie.html">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="icon" href="images/logo.png" type="image/png" style="border-radius: 30%;">
 </head>
 <body>
-  <div class="container">
-    <h1>Cookie Policy</h1>
-    <p>Ultimo aggiornamento: 21 ottobre 2025</p>
-    <h2>Cosa sono i cookie</h2>
-    <p>I cookie sono piccoli file di testo che vengono memorizzati sul tuo dispositivo quando visiti un sito web. Sono utilizzati per varie finalità, come ricordare scelte fatte dall'utente, mantenere sessioni attive e fornire funzionalità personalizzate.</p>
-    <h2>Categorie di cookie utilizzati</h2>
-    <ul>
-      <li><strong>Cookie necessari</strong>: indispensabili per il funzionamento del sito (es. sessione, sicurezza). Questi cookie non possono essere disabilitati.</li>
-      <li><strong>Cookie funzionali</strong>: migliorano l'esperienza dell'utente (es. preferenze di tema, visualizzazione mappa). Vengono impostati solo dopo il consenso.</li>
-      <li><strong>Cookie di analisi</strong>: raccolgono dati aggregati sull'utilizzo del sito per finalità statistiche (es. Google Analytics). Vengono impostati solo dopo il consenso.</li>
-      <li><strong>Cookie di terze parti</strong>: cookie che possono essere impostati da servizi esterni (es. widget social, mappe). Sono attivi solo dopo consenso.</li>
-    </ul>
-  <h2>Come gestire i cookie</h2>
-  <p>Puoi gestire le impostazioni dei cookie tramite il banner presente sul sito oppure direttamente dalle impostazioni del tuo browser. Disabilitando cookie funzionali o di analisi alcune funzionalità potrebbero non essere disponibili.</p>
-  <p>Il nostro sito memorizza la tua scelta di consenso tramite un cookie tecnico <code>cookie_consent</code> e tramite localStorage come fallback; le preferenze vengono conservate per 12 mesi.</p>
-  <h2>Mappa e script di terze parti</h2>
-  <p>La mappa interattiva di Google e altri contenuti di terze parti vengono caricati solo con il consenso dell'utente (categoria funzionale o specifico consenso), e non vengono impostati cookie non essenziali prima del consenso.</p>
-  <h2>Cookie di consenso e tracciamento</h2>
-  <p>Il sito memorizza le tue preferenze di consenso in un cookie tecnico chiamato <code>cookie_consent</code> (oltre a copie in <code>localStorage</code> se necessario). Le opzioni salvate riguardano le categorie: necessary, functional, analytics.</p>
-  <p>Alcuni cookie usati dal sito:</p>
-  <ul>
-    <li><code>cookie_consent</code> — memorizza le preferenze di consenso (365 giorni).</li>
-    <li><code>consent_functional</code> — flag per cookie funzionali (365 giorni).</li>
-    <li><code>consent_analytics</code> — flag per cookie analitici (365 giorni).</li>
-    <li><code>_ga</code>, <code>_gid</code>, <code>_gat</code> — cookie di Google Analytics (se abilitati).</li>
-  </ul>
-    <p>Per informazioni dettagliate su come disabilitare i cookie consulta la documentazione del tuo browser.</p>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <img src="images/logo.png" alt="Angela Lavanderia" class="site-logo">
+                <span>Angela Lavanderia</span>
+            </div>
+            <ul class="nav-links" role="navigation" aria-label="Menu principale">
+                <li><a href="index.html#home">Home</a></li>
+                <li><a href="index.html#servizi">Servizi</a></li>
+                <li><a href="index.html#contatti">Contatti</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button type="button" class="theme-toggle" id="theme-toggle" title="Cambia tema" aria-label="Cambia tema tra chiaro e scuro">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button type="button" class="hamburger" aria-label="Menu di navigazione" aria-expanded="false">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
 
-  <hr>
-    <h3>Controlla i cookie attivi</h3>
-    <p>Premi il pulsante per analizzare i cookie attualmente impostati dal tuo browser (non mostra cookie HttpOnly o di terze parti non accessibili).</p>
-    <p><button id="scan-cookies" class="btn btn-primary">Analizza cookie presenti</button></p>
-    <div id="cookie-scan-results"></div>
-      <h3>Cambio delle preferenze</h3>
-      <p>Puoi modificare le tue preferenze in qualsiasi momento cliccando sul link "Gestisci cookie" presente nel footer del sito oppure tornando nella sezione "Cookie".</p>
+    <main class="legal-content">
+      <div class="container legal-container">
+        <a href="index.html" class="legal-back-link"><i class="fas fa-arrow-left"></i> Torna al sito</a>
+        <h1>Cookie Policy</h1>
+        <p class="legal-updated">Ultimo aggiornamento: 8 luglio 2026</p>
 
-      <h3>Servizi e cookie (esempi)</h3>
-      <ul>
-        <li><strong>Cloudflare/Fastly</strong>: CDN e sicurezza – cookie necessari per caching e mitigazione DDoS. (categoria: necessary)</li>
-        <li><strong>Font Awesome</strong>: icone (categoria: functional)</li>
-        <li><strong>Google Maps</strong>: widget mappa – la mappa viene caricata solo dopo consenso (categoria: functional)</li>
-        <li><strong>Google Analytics</strong>: analisi del traffico (se abilitato) – cookie: <code>_ga</code>, <code>_gid</code>, etc. (categoria: analytics)</li>
-        <li><strong>Marketing / Advertising</strong>: cookie usati per profilazione e misurazione di campagne pubblicitarie (categoria: marketing)</li>
-      </ul>
+        <h2>Cosa sono i cookie</h2>
+        <p>I cookie sono piccoli file di testo che vengono memorizzati sul tuo dispositivo quando visiti un sito web. Sono utilizzati per varie finalità, come ricordare le scelte fatte dall'utente, mantenere sessioni attive e fornire funzionalità personalizzate.</p>
 
-      <h3>Base legale</h3>
-      <p>Il trattamento dei dati per i cookie non essenziali è basato sul consenso esplicito dell'utente. I cookie necessari sono giustificati dall'esecuzione del servizio richiesto e dall'interesse legittimo alla sicurezza.</p>
-    <ul>
-    <li><code>cookie_consent</code> — memorizza le preferenze di consenso (365 giorni).</li>
-    <li><code>consent_functional</code> — flag per cookie funzionali (365 giorni).</li>
-    <li><code>consent_analytics</code> — flag per cookie analitici (365 giorni).</li>
-    <li><code>consent_marketing</code> — flag per cookie di marketing (365 giorni).</li>
-    <li><code>_ga</code>, <code>_gid</code>, <code>_gat</code> — cookie di Google Analytics (se abilitati).</li>
-  </ul>
+        <h2>Categorie di cookie utilizzati</h2>
+        <ul>
+          <li><strong>Cookie necessari</strong>: indispensabili per il funzionamento del sito e per la sua sicurezza (es. infrastruttura di hosting/CDN, memorizzazione della scelta di consenso, caricamento delle icone del sito). Questi cookie non possono essere disabilitati e non richiedono consenso.</li>
+          <li><strong>Cookie funzionali</strong>: migliorano l'esperienza dell'utente (es. preferenze di tema, visualizzazione della mappa di Google Maps). Vengono impostati solo dopo il consenso.</li>
+          <li><strong>Cookie di analisi</strong>: raccolgono dati aggregati sull'utilizzo del sito per finalità statistiche (es. Google Analytics). Vengono impostati solo dopo il consenso.</li>
+          <li><strong>Cookie di marketing</strong>: eventualmente utilizzati per finalità pubblicitarie e di profilazione. Vengono impostati solo dopo il consenso.</li>
+        </ul>
+
+        <h2>Come gestire i cookie</h2>
+        <p>Puoi gestire le impostazioni dei cookie tramite il banner presente sul sito, tramite il link "Gestisci Cookie" nel footer, oppure direttamente dalle impostazioni del tuo browser. Disabilitando i cookie funzionali o di analisi alcune funzionalità (ad esempio la mappa interattiva) potrebbero non essere disponibili.</p>
+        <p>Il nostro sito memorizza la tua scelta di consenso tramite un cookie tecnico <code>cookie_consent</code> e tramite <code>localStorage</code> come fallback; le preferenze vengono conservate per 12 mesi.</p>
+
+        <h2>Mappa e contenuti di terze parti</h2>
+        <p>La mappa interattiva di Google Maps viene caricata solo dopo aver espresso consenso alla categoria "funzionali": prima del consenso viene mostrato un riquadro sostitutivo con un collegamento diretto a Google Maps, senza alcuna richiesta al dominio di Google e senza impostazione di cookie di terze parti.</p>
+
+        <h2>Cookie di consenso e tracciamento</h2>
+        <p>Il sito memorizza le tue preferenze di consenso in un cookie tecnico chiamato <code>cookie_consent</code> (oltre a una copia in <code>localStorage</code> se necessario). Le opzioni salvate riguardano le categorie: necessari, funzionali, statistiche, marketing.</p>
+        <p>Alcuni cookie usati dal sito:</p>
+        <ul>
+          <li><code>cookie_consent</code> — memorizza le preferenze di consenso (365 giorni, necessario).</li>
+          <li><code>consent_functional</code> — flag per cookie funzionali (365 giorni, necessario).</li>
+          <li><code>consent_analytics</code> — flag per cookie di analisi (365 giorni, necessario).</li>
+          <li><code>consent_marketing</code> — flag per cookie di marketing (365 giorni, necessario).</li>
+          <li><code>theme</code> — memorizza la preferenza di tema chiaro/scuro (365 giorni, funzionale, impostato solo con consenso).</li>
+          <li><code>_ga</code>, <code>_gid</code>, <code>_gat</code> — cookie di Google Analytics, se in futuro abilitati (statistiche, impostati solo con consenso).</li>
+        </ul>
+        <p>Per informazioni dettagliate su come disabilitare i cookie consulta la documentazione del tuo browser.</p>
+
+        <hr>
+
+        <h3>Controlla i cookie attivi</h3>
+        <p>Premi il pulsante per analizzare i cookie attualmente impostati dal tuo browser (non mostra cookie HttpOnly o di terze parti non accessibili via JavaScript).</p>
+        <p><button id="scan-cookies" class="btn btn-primary">Analizza cookie presenti</button></p>
+        <div id="cookie-scan-results"></div>
+
+        <h3>Cambio delle preferenze</h3>
+        <p>Puoi modificare le tue preferenze in qualsiasi momento cliccando sul link "Gestisci Cookie" presente nel footer del sito.</p>
+
+        <h3>Servizi e cookie (dettaglio)</h3>
+        <ul>
+          <li><strong>Cloudflare / Fastly / GitHub Pages</strong>: infrastruttura di hosting, CDN e sicurezza — necessari al funzionamento del sito, sempre attivi (categoria: necessari).</li>
+          <li><strong>Font Awesome</strong>: libreria di icone caricata da CDN, necessaria alla corretta visualizzazione grafica del sito; non imposta cookie né tratta dati personali (categoria: necessari).</li>
+          <li><strong>Google Maps</strong>: widget mappa — caricato solo dopo consenso alla categoria funzionale (categoria: funzionali).</li>
+          <li><strong>Google Analytics</strong>: analisi del traffico, se in futuro abilitato — cookie: <code>_ga</code>, <code>_gid</code>, ecc. (categoria: statistiche).</li>
+          <li><strong>Marketing / Advertising</strong>: eventuali cookie usati per profilazione e misurazione di campagne pubblicitarie (categoria: marketing).</li>
+        </ul>
+
+        <h3>Base legale</h3>
+        <p>Il trattamento dei dati per i cookie non essenziali si basa sul consenso esplicito e informato dell'utente, richiesto tramite il banner prima di qualsiasi attivazione. I cookie necessari sono giustificati dall'esecuzione del servizio richiesto e dal legittimo interesse alla sicurezza, e non richiedono consenso ai sensi della normativa vigente (art. 122 Codice Privacy e Linee Guida Cookie del Garante Privacy).</p>
+      </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Angela Lavanderia. Tutti i diritti riservati.</p>
+            <p>
+                <a href="privacy.html" title="Privacy Policy">Privacy Policy</a>
+                <span style="color: rgba(255,255,255,0.5); margin: 0 0.5rem;">|</span>
+                <a href="cookie.html" title="Cookie Policy">Cookie Policy</a>
+                <span style="color: rgba(255,255,255,0.5); margin: 0 0.5rem;">|</span>
+                <a href="terms.html" title="Termini e Condizioni">Termini e Condizioni</a>
+                <span style="color: rgba(255,255,255,0.5); margin: 0 0.5rem;">|</span>
+                <a href="#" id="cookie-manage" style="color: rgba(255,255,255,0.9); text-decoration: underline;">Gestisci Cookie</a>
+            </p>
+            <p>Sito realizzato dalla Technical In-Engine</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
 </html>

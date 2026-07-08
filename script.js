@@ -23,6 +23,8 @@ onReady(() => {
   navAnchors.forEach(a => {
     a.addEventListener('click', () => {
       navLinks.classList.remove('active');
+      hamburger.classList.remove('open');
+      hamburger.setAttribute('aria-expanded', 'false');
       navAnchors.forEach(x => x.classList.remove('active'));
       a.classList.add('active');
     });
@@ -93,7 +95,7 @@ const servicesMeta = [
   { id: 'cloudflare', name: 'Cloudflare', desc: 'Content Delivery Network per performance e sicurezza.', category: 'necessary' },
   { id: 'fastly', name: 'Fastly CDN', desc: 'Content Delivery Network per caching e performance.', category: 'necessary' },
   { id: 'github_pages', name: 'GitHub Pages', desc: 'Hosting del sito statico.', category: 'necessary' },
-  { id: 'fontawesome', name: 'Font Awesome', desc: 'Libreria di icone per elementi grafici.', category: 'functional' },
+  { id: 'fontawesome', name: 'Font Awesome', desc: 'Libreria di icone per elementi grafici, caricata da CDN. Non imposta cookie né tratta dati personali.', category: 'necessary' },
   { id: 'google_maps', name: 'Google Maps Widget', desc: 'Incorpora la mappa interattiva di Google (terze parti).', category: 'functional' }
 ];
 
@@ -560,6 +562,8 @@ function handleConsentEffects() {
   if (consent.analytics) {
     console.log('Analytics consent granted – ready to initialize tracking.');
   }
+
+  initMap();
 }
 
 function runPostConsent() {
@@ -573,16 +577,19 @@ function runPostConsent() {
 
 function loadAnalytics() {
   if (document.getElementById('ga-script')) return; // already loaded
-  // Example stub for Google Analytics (gtag)
+  // Stub per Google Analytics 4 (gtag). Sostituire GA_MEASUREMENT_ID con l'ID reale (formato G-XXXXXXXXXX)
+  // solo quando Analytics verrà effettivamente attivato: finché l'ID è un placeholder lo script non invia dati.
+  const GA_MEASUREMENT_ID = 'G-XXXXXXXXXX';
+  if (GA_MEASUREMENT_ID.includes('XXXXXXXXXX')) return;
   const script = document.createElement('script');
   script.id = 'ga-script';
   script.async = true;
-  script.src = 'https://www.googletagmanager.com/gtag/js?id=UA-000000-0';
+  script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
   script.onload = () => {
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', 'UA-000000-0');
+    gtag('config', GA_MEASUREMENT_ID, { anonymize_ip: true });
   };
   document.head.appendChild(script);
 }
@@ -663,33 +670,68 @@ onReady(() => {
     });
   }
 
-  // Handle map loader
-  const mapIframe = document.querySelector('.map-wrapper iframe');
-  const mapLoader = document.querySelector('.map-loader');
-  if (mapIframe && mapLoader) {
-    let mapLoaded = false;
-    mapIframe.addEventListener('load', () => {
-      mapLoaded = true;
-      mapLoader.classList.add('hidden');
-      console.log('Google Maps iframe loaded');
-    });
-    // Fallback: show error after 5 seconds if iframe doesn't fire load event
-    setTimeout(() => {
-      if (!mapLoaded) {
-        const msg = document.getElementById('map-loader-msg');
-        const fallback = document.getElementById('map-fallback');
-        if (msg) msg.textContent = 'Impossibile caricare la mappa.';
-        if (fallback) fallback.style.display = 'block';
-        mapLoader.classList.remove('hidden');
-        console.warn('Google Maps iframe non caricato: possibile blocco da AdBlock, privacy, cookie o CSP.');
-      } else {
-        if (!mapLoader.classList.contains('hidden')) {
-          mapLoader.classList.add('hidden');
-        }
-      }
-    }, 5000);
+  // Handle map loader (consent-gated: Google Maps only loads after functional consent)
+  initMap();
+  const mapConsentBtn = document.getElementById('map-consent-accept');
+  if (mapConsentBtn) {
+    mapConsentBtn.addEventListener('click', grantFunctionalConsentForMap);
   }
 });
+
+/* ----------------------------------------------------------------- */
+/* Google Maps: caricato solo dopo consenso ai cookie funzionali      */
+/* ----------------------------------------------------------------- */
+function initMap() {
+  const mapIframe = document.getElementById('map-iframe');
+  const mapLoader = document.getElementById('map-loader');
+  const mapGate = document.getElementById('map-consent-gate');
+  if (!mapIframe || !mapLoader || !mapGate) return;
+
+  if (!hasConsent('functional')) {
+    mapGate.hidden = false;
+    mapLoader.classList.add('hidden');
+    if (mapIframe.getAttribute('src')) mapIframe.removeAttribute('src');
+    return;
+  }
+
+  mapGate.hidden = true;
+  if (mapIframe.getAttribute('src')) return; // già caricata
+
+  let mapLoaded = false;
+  mapIframe.addEventListener('load', () => {
+    mapLoaded = true;
+    mapLoader.classList.add('hidden');
+    console.log('Google Maps iframe loaded');
+  });
+  mapIframe.src = mapIframe.dataset.src;
+  // Fallback: show error after 5 seconds if iframe doesn't fire load event
+  setTimeout(() => {
+    if (!mapLoaded) {
+      const msg = document.getElementById('map-loader-msg');
+      const fallback = document.getElementById('map-fallback');
+      if (msg) msg.textContent = 'Impossibile caricare la mappa.';
+      if (fallback) fallback.style.display = 'block';
+      mapLoader.classList.remove('hidden');
+      console.warn('Google Maps iframe non caricato: possibile blocco da AdBlock o CSP.');
+    } else if (!mapLoader.classList.contains('hidden')) {
+      mapLoader.classList.add('hidden');
+    }
+  }, 5000);
+}
+
+function grantFunctionalConsentForMap() {
+  // Consenso granulare "solo per la mappa": non marca il banner principale come confermato,
+  // così le altre categorie restano da scegliere se l'utente non lo ha ancora fatto.
+  const current = getConsent() || { ...defaultConsent };
+  current.functional = true;
+  const ts = new Date().toISOString();
+  const normalized = { ...defaultConsent, ...current, ts, version: COOKIE_VERSION };
+  setCookie('cookie_consent', encodeURIComponent(JSON.stringify(normalized)), 365);
+  try { localStorage.setItem('cookie_consent', JSON.stringify(normalized)); } catch (e) {}
+  setCookie('consent_functional', '1', 365);
+  try { localStorage.setItem('consent_functional', '1'); } catch (e) {}
+  initMap();
+}
 
 /* ----------------------------------------------------------------- */
 /* Theme handling (only store preference if consent is given)         */

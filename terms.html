@@ -5,19 +5,85 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Termini e Condizioni - Angela Lavanderia</title>
   <meta name="description" content="Termini di utilizzo del sito Angela Lavanderia.">
-  <link rel="stylesheet" href="style.css">
+  <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://angelalavanderia.it/terms.html">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="icon" href="images/logo.png" type="image/png" style="border-radius: 30%;">
 </head>
 <body>
-  <div class="container">
-    <h1>Termini e Condizioni</h1>
-    <p>Ultimo aggiornamento: 21 ottobre 2025</p>
-    <h2>Accettazione dei termini</h2>
-    <p>Accedendo e utilizzando questo sito, accetti di rispettare i termini descritti in questa pagina.</p>
-    <h2>Limitazione di responsabilità</h2>
-    <p>Il sito è fornito così com'è. Non ci assumiamo responsabilità per danni diretti o indiretti derivanti dall'utilizzo delle informazioni presenti sul sito.</p>
-    <h2>Modifiche ai contenuti</h2>
-    <p>Ci riserviamo il diritto di modificare i contenuti del sito e i presenti termini in qualsiasi momento.</p>
-  </div>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <img src="images/logo.png" alt="Angela Lavanderia" class="site-logo">
+                <span>Angela Lavanderia</span>
+            </div>
+            <ul class="nav-links" role="navigation" aria-label="Menu principale">
+                <li><a href="index.html#home">Home</a></li>
+                <li><a href="index.html#servizi">Servizi</a></li>
+                <li><a href="index.html#contatti">Contatti</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button type="button" class="theme-toggle" id="theme-toggle" title="Cambia tema" aria-label="Cambia tema tra chiaro e scuro">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button type="button" class="hamburger" aria-label="Menu di navigazione" aria-expanded="false">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="legal-content">
+      <div class="container legal-container">
+        <a href="index.html" class="legal-back-link"><i class="fas fa-arrow-left"></i> Torna al sito</a>
+        <h1>Termini e Condizioni</h1>
+        <p class="legal-updated">Ultimo aggiornamento: 8 luglio 2026</p>
+
+        <h2>Accettazione dei termini</h2>
+        <p>Accedendo e utilizzando questo sito, l'utente accetta di rispettare i termini descritti in questa pagina. Se non si è d'accordo con tali termini, si invita a non utilizzare il sito.</p>
+
+        <h2>Uso del sito</h2>
+        <p>I contenuti del sito hanno finalità informativa sui servizi offerti da Angela Lavanderia. È vietato un utilizzo del sito che violi la legge applicabile o i diritti di terzi.</p>
+
+        <h2>Proprietà intellettuale</h2>
+        <p>Testi, immagini, loghi e altri contenuti presenti sul sito sono di proprietà di Angela Lavanderia o dei rispettivi titolari e sono protetti dalle norme sul diritto d'autore e sulla proprietà industriale. È vietata la riproduzione senza autorizzazione scritta.</p>
+
+        <h2>Limitazione di responsabilità</h2>
+        <p>Il sito è fornito "così com'è". Pur adottando ragionevoli misure per garantire l'accuratezza delle informazioni, non si assume responsabilità per danni diretti o indiretti derivanti dall'utilizzo delle informazioni presenti sul sito, salvo quanto previsto inderogabilmente dalla legge a tutela del consumatore.</p>
+
+        <h2>Collegamenti a siti terzi</h2>
+        <p>Il sito può contenere collegamenti a siti di terze parti (es. Google Maps, Instagram, Facebook). Angela Lavanderia non è responsabile dei contenuti o delle pratiche sulla privacy di tali siti esterni.</p>
+
+        <h2>Modifiche ai contenuti</h2>
+        <p>Ci riserviamo il diritto di modificare i contenuti del sito e i presenti termini in qualsiasi momento. Le modifiche saranno pubblicate su questa pagina con indicazione della data di ultimo aggiornamento.</p>
+
+        <h2>Legge applicabile e foro competente</h2>
+        <p>I presenti termini sono regolati dalla legge italiana. Per qualsiasi controversia sarà competente il foro del luogo di residenza o domicilio del consumatore, ove applicabile, ovvero il foro di Salerno negli altri casi.</p>
+
+        <h2>Contatti</h2>
+        <p>Per qualsiasi domanda relativa ai presenti Termini e Condizioni, contatta: <a href="mailto:info@angelalavanderia.it">info@angelalavanderia.it</a>.</p>
+      </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Angela Lavanderia. Tutti i diritti riservati.</p>
+            <p>
+                <a href="privacy.html" title="Privacy Policy">Privacy Policy</a>
+                <span style="color: rgba(255,255,255,0.5); margin: 0 0.5rem;">|</span>
+                <a href="cookie.html" title="Cookie Policy">Cookie Policy</a>
+                <span style="color: rgba(255,255,255,0.5); margin: 0 0.5rem;">|</span>
+                <a href="terms.html" title="Termini e Condizioni">Termini e Condizioni</a>
+                <span style="color: rgba(255,255,255,0.5); margin: 0 0.5rem;">|</span>
+                <a href="#" id="cookie-manage" style="color: rgba(255,255,255,0.9); text-decoration: underline;">Gestisci Cookie</a>
+            </p>
+            <p>Sito realizzato dalla Technical In-Engine</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
 </body>
 </html>

@@ -138,9 +138,9 @@
                     <p>Servizio di stiratura professionale con cura particolare per ogni tipo di tessuto.</p>
                 </div>
                 <div class="servizio-card">
-                    <i class="fas fa-user-tie"></i>
-                    <h3>Capi da Cerimonia</h3>
-                    <p>Trattamento e pulitura professionale di abiti da cerimonia, abiti da sposa e completi.</p>
+                    <i class="fas fa-droplet"></i>
+                    <h3>Smacchiatura Specializzata</h3>
+                    <p>Trattamento mirato per rimuovere macchie ostinate come vino, olio, inchiostro e altre sostanze difficili.</p>
                 </div>
             </div>
         </div>
@@ -167,14 +167,22 @@
             <div class="map-container">
                 <h2>Dove Siamo</h2>
                 <div class="map-wrapper">
-                    <div class="map-loader">
+                    <div class="map-loader" id="map-loader">
                         <div class="loader-spinner"></div>
                         <p id="map-loader-msg">Caricamento mappa...</p>
                         <div id="map-fallback" style="display:none; margin-top:10px;">
-                            <p style="color:#c00; font-size:15px;">Impossibile caricare la mappa.<br>Prova a disattivare AdBlock, accettare i cookie oppure <a href="https://maps.app.goo.gl/4niTJdkJKNBcwzYq7" target="_blank" rel="noopener" style="color:var(--primary-color);text-decoration:underline;">apri direttamente su Google Maps</a>.</p>
+                            <p style="color:#c00; font-size:15px;">Impossibile caricare la mappa.<br>Prova a disattivare AdBlock oppure <a href="https://maps.app.goo.gl/4niTJdkJKNBcwzYq7" target="_blank" rel="noopener" style="color:var(--primary-color);text-decoration:underline;">apri direttamente su Google Maps</a>.</p>
                         </div>
                     </div>
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d608.8414341575573!2d14.949358474383406!3d40.618410640470096!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x133be1ef947d91d9%3A0x4ddf4a13a1ac6247!2sLAVANDERIA%20ANGELA!5e0!3m2!1sit!2sit!4v1760873069180!5m2!1sit!2sit" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Mappa della posizione di Angela Lavanderia in Via G. D'Annunzio 35, Bellizzi" aria-label="Mappa interattiva che mostra la posizione della lavanderia"></iframe>
+                    <div class="map-consent-gate" id="map-consent-gate" hidden>
+                        <i class="fas fa-map-marked-alt"></i>
+                        <p>Per visualizzare la mappa interattiva devi accettare i cookie <strong>funzionali</strong> (la mappa è fornita da Google Maps).</p>
+                        <div class="map-consent-actions">
+                            <button type="button" class="btn btn-primary" id="map-consent-accept">Accetta cookie funzionali</button>
+                            <a href="https://maps.app.goo.gl/4niTJdkJKNBcwzYq7" target="_blank" rel="noopener" class="btn btn-outline">Apri su Google Maps</a>
+                        </div>
+                    </div>
+                    <iframe id="map-iframe" data-src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d608.8414341575573!2d14.949358474383406!3d40.618410640470096!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x133be1ef947d91d9%3A0x4ddf4a13a1ac6247!2sLAVANDERIA%20ANGELA!5e0!3m2!1sit!2sit!4v1760873069180!5m2!1sit!2sit" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Mappa della posizione di Angela Lavanderia in Via G. D'Annunzio 35, Bellizzi" aria-label="Mappa interattiva che mostra la posizione della lavanderia"></iframe>
                 </div>
             </div>
 
@@ -246,11 +254,13 @@
     <!-- Footer -->
     <footer>
         <div class="container">
-            <p>&copy; 2025 Angela Lavanderia. Tutti i diritti riservati.</p>
+            <p>&copy; 2026 Angela Lavanderia. Tutti i diritti riservati.</p>
                         <p>
                             <a href="privacy.html" title="Privacy Policy">Privacy Policy</a>
                             <span style="color: rgba(255,255,255,0.5); margin: 0 0.5rem;">|</span>
                             <a href="cookie.html" title="Cookie Policy">Cookie Policy</a>
+                            <span style="color: rgba(255,255,255,0.5); margin: 0 0.5rem;">|</span>
+                            <a href="terms.html" title="Termini e Condizioni">Termini e Condizioni</a>
                             <span style="color: rgba(255,255,255,0.5); margin: 0 0.5rem;">|</span>
                             <a href="#" id="cookie-manage" style="color: rgba(255,255,255,0.9); text-decoration: underline;">Gestisci Cookie</a>
                         </p>
