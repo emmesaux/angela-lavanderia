@@ -39,235 +39,225 @@
   }
   </script>
 
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="icon" href="images/logo.png" type="image/png" style="border-radius: 30%;">
-
+  <link rel="preload" href="assets/fonts/InterTight-variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="icon" href="images/logo.png" type="image/png">
+  <script>if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('js');</script>
 </head>
 <body>
-    <!-- Navigazione -->
-    <nav class="navbar">
-    <div class="container">
-            <div class="logo">
-                <img src="images/logo.png" alt="Angela Lavanderia" class="site-logo">
-                <span>Angela Lavanderia</span>
-            </div>
-            <ul class="nav-links" role="navigation" aria-label="Menu principale">
+    <a class="skip" href="#main">Vai al contenuto</a>
+
+    <nav class="navbar" id="nav">
+        <div class="container">
+            <a class="logo" href="#home" aria-label="Angela Lavanderia, torna in alto">
+                <img src="images/logo.png" alt="" class="site-logo">
+                <span><em>Angela</em> Lavanderia</span>
+            </a>
+            <ul class="nav-links" aria-label="Menu principale">
                 <li><a href="#home">Home</a></li>
+                <li><a href="#chi-siamo">Chi siamo</a></li>
                 <li><a href="#servizi">Servizi</a></li>
-               <!-- <li><a href="#prezzi">Prezzi</a></li> -->
+                <li><a href="#instagram">News</a></li>
                 <li><a href="#contatti">Contatti</a></li>
             </ul>
             <div class="nav-actions">
+                <a class="nav-call" href="tel:+393397707646">Chiama ora</a>
                 <button type="button" class="theme-toggle" id="theme-toggle" title="Cambia tema" aria-label="Cambia tema tra chiaro e scuro">
                     <i class="fas fa-moon"></i>
                 </button>
                 <button type="button" class="hamburger" aria-label="Menu di navigazione" aria-expanded="false">
-                    <span></span>
-                    <span></span>
-                    <span></span>
+                    <span></span><span></span><span></span>
                 </button>
             </div>
         </div>
     </nav>
 
-    <!-- Hero Section -->
     <header id="home" class="hero">
-        <div class="hero-content">
-            <img src="images/logo.png" alt="Logo Angela Lavanderia" class="hero-logo">
-            <h1>Angela Lavanderia</h1>
-            <p>Servizio professionale di lavanderia con cura e attenzione per i tuoi vestiti</p>
-            <a href="#contatti" class="btn btn-primary">Contattaci Ora</a>
+        <div class="hero-text">
+            <h1>
+                <span class="line" data-hero="line"><span>Ogni capo</span></span>
+                <span class="line" data-hero="line"><span>in <em>buone</em> mani</span></span>
+            </h1>
+            <p class="hero-sub" data-hero="fade">Angela Lavanderia a Bellizzi: lavaggio, stiratura e trattamenti su misura per ogni tessuto, con l'attenzione di sempre.</p>
+            <div class="hero-ctas" data-hero="fade">
+                <a href="tel:+393397707646" class="btn btn-primary">Chiamaci <span class="arr">↗</span></a>
+                <a href="#servizi" class="btn btn-outline">Scopri i servizi</a>
+            </div>
+            <p class="hero-where" data-hero="fade">Via G. D'Annunzio, 35 · Bellizzi (SA)<br><span class="status" data-status hidden></span></p>
         </div>
+        <div class="hero-visual" data-hero="fade">
+            <div class="hero-photo"><img src="images/hero-bg.jpg" alt="Ingresso di Angela Lavanderia in Via D'Annunzio 35, Bellizzi" fetchpriority="high"></div>
+            <div class="hero-card">
+                <small>Telefono</small>
+                <b>339 770 7646</b>
+                <span>Chiama o passa in negozio.</span>
+            </div>
+        </div>
+        <span class="hero-scroll" aria-hidden="true"></span>
     </header>
 
-    <!-- Chi Siamo -->
-    <main>
-    <section id="chi-siamo" class="chi-siamo">
+    <main id="main">
+    <section id="chi-siamo" class="sheet sheet--white chi-siamo">
         <div class="container">
-            <h2>Chi Siamo</h2>
-            <div class="content-grid">
-                <div class="content-text">
-                    <p>Angela Lavanderia è un'azienda con anni di esperienza nel settore della lavanderia professionale. 
-                    Offriamo servizi di qualità superiore con il massimo rispetto per i vostri indumenti.</p>
-                    <p>La nostra missione è fornire un servizio affidabile, veloce e conveniente per tutte le vostre esigenze di lavanderia.</p>
+            <p class="kicker" data-reveal>Chi siamo <span class="n">01</span></p>
+            <div class="about-grid">
+                <p class="statement" data-split>Anni di esperienza nella lavanderia professionale, con il massimo rispetto per i vostri indumenti.</p>
+                <div class="about-side">
+                    <p data-reveal>La nostra missione è fornire un servizio affidabile, veloce e conveniente per tutte le vostre esigenze di lavanderia.</p>
+                    <dl class="stats" data-reveal>
+                        <div><dt>6</dt><dd>servizi dedicati</dd></div>
+                        <div><dt>5</dt><dd>giorni di apertura</dd></div>
+                        <div><dt>3</dt><dd>pomeriggi aperti</dd></div>
+                    </dl>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="instagram" class="instagram">
+    <section id="servizi" class="sheet servizi">
         <div class="container">
-            <h2>News</h2>
-            <p class="lead">Gli ultimi post dal nostro profilo</p>
-            <div id="insta-feed" class="insta-grid" role="list" aria-label="Feed Instagram">
-                <!-- I post verranno caricati qui -->
+            <div class="head">
+                <p class="kicker" data-reveal>Servizi <span class="n">02</span></p>
+                <h2 class="h2" data-reveal>Tutto per i tuoi <em>capi</em></h2>
             </div>
-        </div>
-    </section>
-
-
-    <!-- Servizi -->
-    <section id="servizi" class="servizi">
-        <div class="container">
-            <h2>I Nostri Servizi</h2>
             <div class="servizi-grid">
-                <div class="servizio-card">
-                    <i class="fas fa-wind"></i>
-                    <h3>Lavaggio a Secco</h3>
+                <article class="servizio-card" data-reveal>
+                    <span class="num">01</span>
+                    <i class="fas fa-wind" aria-hidden="true"></i>
+                    <h3>Lavaggio a <em>secco</em></h3>
                     <p>Servizio professionale di lavaggio a secco per abiti e tessuti che non possono essere lavati in acqua.</p>
-                </div>
-                <div class="servizio-card">
-                    <i class="fas fa-shirt"></i>
-                    <h3>Lavaggio Generale</h3>
+                </article>
+                <article class="servizio-card" data-reveal>
+                    <span class="num">02</span>
+                    <i class="fas fa-shirt" aria-hidden="true"></i>
+                    <h3>Lavaggio <em>generale</em></h3>
                     <p>Lavaggio completo di vestiti, camicie, pantaloni e capi di uso comune con cura professionale.</p>
-                </div>
-                <div class="servizio-card">
-                    <i class="fas fa-hand-sparkles"></i>
-                    <h3>Lavaggio Delicato</h3>
+                </article>
+                <article class="servizio-card" data-reveal>
+                    <span class="num">03</span>
+                    <i class="fas fa-hand-sparkles" aria-hidden="true"></i>
+                    <h3>Capi <em>delicati</em></h3>
                     <p>Servizio specializzato per capi delicati, lana, seta e tessuti preziosi.</p>
-                </div>
-                <div class="servizio-card">
-                    <i class="fas fa-bed"></i>
-                    <h3>Pulizia Piumoni e Coperte</h3>
+                </article>
+                <article class="servizio-card" data-reveal>
+                    <span class="num">04</span>
+                    <i class="fas fa-bed" aria-hidden="true"></i>
+                    <h3>Piumoni e <em>coperte</em></h3>
                     <p>Lavaggio e trattamento specifico per piumoni, coperte e trapunte, con asciugatura e sanificazione.</p>
-                </div>
-                <div class="servizio-card">
-                    <i class="fas fa-fire"></i>
-                    <h3>Stiratura</h3>
+                </article>
+                <article class="servizio-card" data-reveal>
+                    <span class="num">05</span>
+                    <i class="fas fa-fire" aria-hidden="true"></i>
+                    <h3><em>Stiratura</em></h3>
                     <p>Servizio di stiratura professionale con cura particolare per ogni tipo di tessuto.</p>
-                </div>
-                <div class="servizio-card">
-                    <i class="fas fa-droplet"></i>
-                    <h3>Smacchiatura Specializzata</h3>
+                </article>
+                <article class="servizio-card" data-reveal>
+                    <span class="num">06</span>
+                    <i class="fas fa-droplet" aria-hidden="true"></i>
+                    <h3><em>Smacchiatura</em></h3>
                     <p>Trattamento mirato per rimuovere macchie ostinate come vino, olio, inchiostro e altre sostanze difficili.</p>
-                </div>
+                </article>
             </div>
         </div>
     </section>
 
-    <!-- Contatti -->
-    <section id="contatti" class="contatti">
+    <section id="instagram" class="sheet sheet--white instagram">
         <div class="container">
-            <h2>Contattaci</h2>
-            <div class="contatti-grid">
-                <div class="info-box">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <h3>Indirizzo</h3>
-                    <p><a href="https://maps.app.goo.gl/4niTJdkJKNBcwzYq7" target="_blank">Visualizza su Maps</a></p>
+            <div class="head">
+                <p class="kicker" data-reveal>News <span class="n">03</span></p>
+                <h2 class="h2" data-reveal>Dal nostro <em>profilo</em></h2>
+                <p class="lead" data-reveal>Gli ultimi post dal nostro profilo Instagram.</p>
+            </div>
+            <div id="insta-feed" class="insta-grid" role="list" aria-label="Feed Instagram"></div>
+            <div class="section-more"><a class="btn btn-outline" href="https://www.instagram.com/lavanderia_angela_" target="_blank" rel="noopener">Vai su Instagram <span class="arr">↗</span></a></div>
+        </div>
+    </section>
+
+    <section id="contatti" class="sheet sheet--dark contatti">
+        <div class="container">
+            <div class="head">
+                <p class="kicker" data-reveal>Contatti <span class="n">04</span></p>
+                <h2 class="h2" data-reveal>Passa a <em>trovarci</em></h2>
+            </div>
+            <div class="contact-grid">
+                <div>
+                    <div class="contact-list" data-reveal>
+                        <div class="contact-item">
+                            <div><small>Indirizzo</small><a class="val" href="https://maps.app.goo.gl/4niTJdkJKNBcwzYq7" target="_blank" rel="noopener">Via G. D'Annunzio, 35<br>84092 Bellizzi</a></div>
+                            <span class="round"><i class="fas fa-location-dot"></i></span>
+                        </div>
+                        <div class="contact-item">
+                            <div><small>Telefono</small><a class="val" href="tel:+393397707646">+39 339 770 7646</a></div>
+                            <span class="round"><i class="fas fa-phone"></i></span>
+                        </div>
+                    </div>
+                    <div class="social" data-reveal>
+                        <h3>Seguici sui social</h3>
+                        <div class="social-links">
+                            <a href="https://www.facebook.com/share/16JR9MJG3V/" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                            <a href="https://www.instagram.com/lavanderia_angela_?igsh=OHg3OWRiNzdncGp2" target="_blank" rel="noopener" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        </div>
+                    </div>
                 </div>
-                <div class="info-box">
-                    <i class="fas fa-phone"></i>
-                    <h3>Telefono</h3>
-                    <p><a href="tel:+393397707646">+39 339 770 7646</a></p>
+                <div class="orari" data-reveal>
+                    <h3>Orari di apertura</h3>
+                    <p class="status" data-status hidden></p>
+                    <div class="orari-grid">
+                        <div class="orario-item"><div class="orario-content"><span class="giorno">Lunedì</span><span class="orario">08:00 – 13:00 · 16:00 – 19:00</span></div></div>
+                        <div class="orario-item"><div class="orario-content"><span class="giorno">Martedì</span><span class="orario">08:00 – 13:00</span></div></div>
+                        <div class="orario-item"><div class="orario-content"><span class="giorno">Mercoledì</span><span class="orario">08:00 – 13:00 · 16:00 – 19:00</span></div></div>
+                        <div class="orario-item"><div class="orario-content"><span class="giorno">Giovedì</span><span class="orario">08:00 – 13:00</span></div></div>
+                        <div class="orario-item"><div class="orario-content"><span class="giorno">Venerdì</span><span class="orario">08:00 – 13:00 · 16:00 – 19:00</span></div></div>
+                        <div class="orario-item"><div class="orario-content"><span class="giorno">Sabato e Domenica</span><span class="orario">Chiuso</span></div></div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Map Embed -->
-            <div class="map-container">
-                <h2>Dove Siamo</h2>
+            <div class="map-container" data-reveal>
+                <h2>Dove siamo</h2>
                 <div class="map-wrapper">
                     <div class="map-loader" id="map-loader">
                         <div class="loader-spinner"></div>
                         <p id="map-loader-msg">Caricamento mappa...</p>
                         <div id="map-fallback" style="display:none; margin-top:10px;">
-                            <p style="color:#c00; font-size:15px;">Impossibile caricare la mappa.<br>Prova a disattivare AdBlock oppure <a href="https://maps.app.goo.gl/4niTJdkJKNBcwzYq7" target="_blank" rel="noopener" style="color:var(--primary-color);text-decoration:underline;">apri direttamente su Google Maps</a>.</p>
+                            <p>Impossibile caricare la mappa.<br>Prova a disattivare AdBlock oppure <a href="https://maps.app.goo.gl/4niTJdkJKNBcwzYq7" target="_blank" rel="noopener" style="text-decoration:underline;">apri direttamente su Google Maps</a>.</p>
                         </div>
                     </div>
                     <div class="map-consent-gate" id="map-consent-gate" hidden>
                         <i class="fas fa-map-marked-alt"></i>
                         <p>Per visualizzare la mappa interattiva devi accettare i cookie <strong>funzionali</strong> (la mappa è fornita da Google Maps).</p>
                         <div class="map-consent-actions">
-                            <button type="button" class="btn btn-primary" id="map-consent-accept">Accetta cookie funzionali</button>
+                            <button type="button" class="btn btn-accent" id="map-consent-accept">Accetta cookie funzionali</button>
                             <a href="https://maps.app.goo.gl/4niTJdkJKNBcwzYq7" target="_blank" rel="noopener" class="btn btn-outline">Apri su Google Maps</a>
                         </div>
                     </div>
                     <iframe id="map-iframe" data-src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d608.8414341575573!2d14.949358474383406!3d40.618410640470096!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x133be1ef947d91d9%3A0x4ddf4a13a1ac6247!2sLAVANDERIA%20ANGELA!5e0!3m2!1sit!2sit!4v1760873069180!5m2!1sit!2sit" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Mappa della posizione di Angela Lavanderia in Via G. D'Annunzio 35, Bellizzi" aria-label="Mappa interattiva che mostra la posizione della lavanderia"></iframe>
                 </div>
             </div>
-
-            <!-- Orari -->
-            <div class="orari">
-                <h3>Orari di Apertura</h3>
-                <div class="orari-grid">
-                    <div class="orario-item">
-                        <i class="fas fa-calendar-day"></i>
-                        <div class="orario-content">
-                            <span class="giorno">Lunedì</span>
-                            <span class="orario">08:00 - 13:00, 16:00 - 19:00</span>
-                        </div>
-                    </div>
-                    <div class="orario-item">
-                        <i class="fas fa-calendar-day"></i>
-                        <div class="orario-content">
-                            <span class="giorno">Martedì</span>
-                            <span class="orario">08:00 - 13:00</span>
-                        </div>
-                    </div>
-                    <div class="orario-item">
-                        <i class="fas fa-calendar-day"></i>
-                        <div class="orario-content">
-                            <span class="giorno">Mercoledì</span>
-                            <span class="orario">08:00 - 13:00, 16:00 - 19:00</span>
-                        </div>
-                    </div>
-                    <div class="orario-item">
-                        <i class="fas fa-calendar-day"></i>
-                        <div class="orario-content">
-                            <span class="giorno">Giovedì</span>
-                            <span class="orario">08:00 - 13:00</span>
-                        </div>
-                    </div>
-                    <div class="orario-item">
-                        <i class="fas fa-calendar-day"></i>
-                        <div class="orario-content">
-                            <span class="giorno">Venerdì</span>
-                            <span class="orario">08:00 - 13:00, 16:00 - 19:00</span>
-                        </div>
-                    </div>
-                    <div class="orario-item">
-                        <i class="fas fa-calendar-day"></i>
-                        <div class="orario-content">
-                            <span class="giorno">Sabato e Domenica</span>
-                            <span class="orario">Chiuso</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Social -->
-            <div class="social">
-                <h3>Seguici sui Social</h3>
-                <div class="social-links">
-                    <a href="https://www.facebook.com/share/16JR9MJG3V/" target="_blank" aria-label="Facebook">
-                        <i class="fab fa-facebook-f"></i>
-                    </a>
-                    <a href="https://www.instagram.com/lavanderia_angela_?igsh=OHg3OWRiNzdncGp2" target="_blank" aria-label="Instagram">
-                        <i class="fab fa-instagram"></i>
-                    </a>
-                </div>
-            </div>
         </div>
     </section>
     </main>
 
-    <!-- Footer -->
     <footer>
         <div class="container">
-            <p>&copy; 2026 Angela Lavanderia. Tutti i diritti riservati.</p>
-                        <p>
-                            <a href="privacy.html" title="Privacy Policy">Privacy Policy</a>
-                            <span style="color: rgba(255,255,255,0.5); margin: 0 0.5rem;">|</span>
-                            <a href="cookie.html" title="Cookie Policy">Cookie Policy</a>
-                            <span style="color: rgba(255,255,255,0.5); margin: 0 0.5rem;">|</span>
-                            <a href="terms.html" title="Termini e Condizioni">Termini e Condizioni</a>
-                            <span style="color: rgba(255,255,255,0.5); margin: 0 0.5rem;">|</span>
-                            <a href="#" id="cookie-manage" style="color: rgba(255,255,255,0.9); text-decoration: underline;">Gestisci Cookie</a>
-                        </p>
-            <p>Sito realizzato dalla Technical In-Engine</p>
+            <div class="footer-row">
+                <p>&copy; <span id="year">2026</span> Angela Lavanderia. Tutti i diritti riservati.</p>
+                <p class="footer-links">
+                    <a href="privacy.html">Privacy Policy</a>
+                    <a href="cookie.html">Cookie Policy</a>
+                    <a href="terms.html">Termini e Condizioni</a>
+                    <a href="#" id="cookie-manage">Gestisci Cookie</a>
+                </p>
+                <p>Sito realizzato dalla Technical In-Engine</p>
+            </div>
         </div>
     </footer>
 
     <script src="script.js"></script>
+    <script src="assets/vendor/gsap.min.js" defer></script>
+    <script src="assets/vendor/ScrollTrigger.min.js" defer></script>
+    <script src="assets/vendor/lenis.min.js" defer></script>
+    <script src="main.js" defer></script>
 </body>
 </html>

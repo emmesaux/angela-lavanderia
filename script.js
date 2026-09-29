@@ -44,15 +44,6 @@ onReady(() => {
   }, observerOptions);
   sections.forEach(section => sectionObserver.observe(section));
 
-  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-      const target = document.querySelector(this.getAttribute('href'));
-      if (target) {
-        e.preventDefault();
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    });
-  });
 });
 
 // Animazioni sezioni
@@ -775,22 +766,6 @@ onReady(function() {
       setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
     });
   }
-});
-
-// Gestisci la visibilità del navbar
-let lastScrollTop = 0;
-const navbar = document.querySelector('.navbar');
-
-window.addEventListener('scroll', () => {
-    let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    
-    if (scrollTop > 100) {
-        navbar.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
-    } else {
-        navbar.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
-    }
-    
-    lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
 });
 
 console.log('Angela Lavanderia - Sito web caricato correttamente!');
