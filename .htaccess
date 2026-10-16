@@ -5,11 +5,9 @@ Options -Indexes
 <IfModule mod_rewrite.c>
 RewriteEngine On
 
-# www -> senza www (il canonical del sito Ã¨ https://angelalavanderia.it/)
-RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
-RewriteRule ^ %{REQUEST_SCHEME}://%1%{REQUEST_URI} [R=301,L]
+# Il reindirizzamento angelalavanderia.it -> www.angelalavanderia.it lo fa già TopHost: NON aggiungere la regola inversa (loop).
 
-# HTTP -> HTTPS: ATTIVARE (togliere il #) solo dopo aver verificato che https://angelalavanderia.it si apre
+# HTTP -> HTTPS: ATTIVARE (togliere il #) solo dopo aver verificato che https://www.angelalavanderia.it si apre
 # RewriteCond %{HTTPS} !=on
 # RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 </IfModule>
