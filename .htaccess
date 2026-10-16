@@ -5,7 +5,7 @@ Options -Indexes
 <IfModule mod_rewrite.c>
 RewriteEngine On
 
-# Il reindirizzamento angelalavanderia.it -> www.angelalavanderia.it lo fa già TopHost: NON aggiungere la regola inversa (loop).
+# Il reindirizzamento angelalavanderia.it -> www.angelalavanderia.it lo fa gia TopHost: NON aggiungere la regola inversa (loop).
 
 # HTTP -> HTTPS: ATTIVARE (togliere il #) solo dopo aver verificato che https://www.angelalavanderia.it si apre
 # RewriteCond %{HTTPS} !=on
